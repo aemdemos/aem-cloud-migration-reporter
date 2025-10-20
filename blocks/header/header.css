@@ -1,11 +1,4 @@
 /* header and nav layout */
-header .nav-wrapper {
-  background-color: var(--background-color);
-  width: 100%;
-  z-index: 2;
-  position: fixed;
-}
-
 header nav {
   box-sizing: border-box;
   display: grid;
@@ -18,7 +11,7 @@ header nav {
   max-width: 1248px;
   height: var(--nav-height);
   padding: 0 24px;
-  font-family: var(--body-font-family);
+    font-family: var(--body-font-family), serif;
 }
 
 header nav[aria-expanded='true'] {
