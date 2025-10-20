@@ -10,29 +10,29 @@
  * governing permissions and limitations under the License.
  */
 
-export const getAllMigrations = async () => {
-    return [
-        {
-            id: 1,
-            tenant: "Acme Company",
-            bpaReportUploads: 2,
-            totalExtractions: 5,
-            totalIngestions: 3,
-            firstExtraction: "2025-08-01",
-            firstIngestion: "2025-08-02",
-            lastExtraction: "2025-09-01",
-            lastIngestion: "2025-09-02"
-        },
-        {
-            id: 2,
-            tenant: "Global Corp",
-            bpaReportUploads: 0,
-            totalExtractions: 1,
-            totalIngestions: 1,
-            firstExtraction: "2025-10-12",
-            firstIngestion: "2025-10-13",
-            lastExtraction: "2025-10-12",
-            lastIngestion: "2025-10-13"
-        }
-    ];
-};
+const getAllMigrations = async () => [
+  {
+    id: 1,
+    tenant: 'Acme Company',
+    bpaReportUploads: 2,
+    totalExtractions: 5,
+    totalIngestions: 3,
+    firstExtraction: '2025-08-01',
+    firstIngestion: '2025-08-02',
+    lastExtraction: '2025-09-01',
+    lastIngestion: '2025-09-02',
+  },
+  {
+    id: 2,
+    tenant: 'Global Corp',
+    bpaReportUploads: 0,
+    totalExtractions: 1,
+    totalIngestions: 1,
+    firstExtraction: '2025-10-12',
+    firstIngestion: '2025-10-13',
+    lastExtraction: '2025-10-12',
+    lastIngestion: '2025-10-13',
+  },
+];
+
+export default getAllMigrations;

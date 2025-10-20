@@ -10,9 +10,10 @@
  * governing permissions and limitations under the License.
  */
 
-import { getAllMigrations } from './api.js';
-import { MigrationsTable } from './migrationsTable.js';
+import getAllMigrations from './api.js';
+import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
+import getUserProfile from './userProfile.js';
 
 const migrationsTable = new MigrationsTable();
 
@@ -22,8 +23,10 @@ const migrationsTable = new MigrationsTable();
  */
 class MigrationsApp {
   constructor() {
+    this.userProfile = null;
     this.migrations = [];
     this.filteredMigrations = [];
+    this.isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
     this.init();
   }
 
@@ -31,13 +34,67 @@ class MigrationsApp {
    * Initialize the application
    */
   init() {
+    this.setupUserProfile();
+    this.setupEventListeners();
+    MigrationsApp.setupSidekickLogout();
+
     // Load the migration table as soon as the app initializes
     // Don't ignore the promise; handle errors globally if needed
     this.startMigrationSearch().catch((error) => {
       // eslint-disable-next-line no-console
       console.error('Unhandled error in startMigrationSearch:', error);
     });
-    this.setupEventListeners();
+  }
+
+  /**
+   * Setup user profile for localhost development
+   */
+  setupUserProfile() {
+    if (this.isLocalhost) {
+      const params = new URLSearchParams(window.location.search);
+      const email = params.get('email');
+      const name = params.get('name');
+
+      if (email && name) {
+        this.userProfile = { email, name };
+      } else {
+        // eslint-disable-next-line no-alert
+        alert('missing email and name query params for local debug');
+      }
+    }
+  }
+
+  /**
+   * Setup AEM sidekick logout functionality
+   */
+  static setupSidekickLogout() {
+    const doLogout = () => window.location.reload();
+
+    const sk = document.querySelector('aem-sidekick');
+    if (sk) {
+      sk.addEventListener('logged-out', doLogout);
+    } else {
+      document.addEventListener('sidekick-ready', () => {
+        document.querySelector('aem-sidekick')?.addEventListener('logged-out', doLogout);
+      }, { once: true });
+    }
+  }
+
+  /**
+   * Ensure user profile is available
+   */
+  async ensureUserProfile() {
+    if (!this.userProfile) {
+      try {
+        this.userProfile = await getUserProfile();
+      } catch (error) {
+        const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
+        if (container) {
+          container.innerHTML = '<p class="error">Failed to get user profile. Please ensure you are logged in.</p>';
+        }
+        throw error;
+      }
+    }
   }
 
   /**
@@ -58,15 +115,14 @@ class MigrationsApp {
    */
   filterMigrations(searchTerm) {
     const lowerSearchTerm = searchTerm.toLowerCase().trim();
-    
+
     if (!lowerSearchTerm) {
       this.filteredMigrations = [...this.migrations];
     } else {
-      this.filteredMigrations = this.migrations.filter(migration => 
-        migration.tenant && migration.tenant.toLowerCase().includes(lowerSearchTerm)
-      );
+      // eslint-disable-next-line max-len
+      this.filteredMigrations = this.migrations.filter((migration) => migration.tenant && migration.tenant.toLowerCase().includes(lowerSearchTerm));
     }
-    
+
     migrationsTable.initTable(this.filteredMigrations);
     migrationsTable.enableSorting();
   }
@@ -76,15 +132,22 @@ class MigrationsApp {
    */
   async startMigrationSearch() {
     try {
+      // Ensure user profile is available
+      await this.ensureUserProfile();
+
       // Show loading state
       migrationsTable.initTable([]);
       migrationsTable.enableSorting();
+
       // Fetch migrations
       this.migrations = await getAllMigrations();
+
       // Sort tenants alphabetically for predictable loading
       this.migrations.sort((a, b) => a.tenant.localeCompare(b.tenant));
+
       // Initialize filtered migrations
       this.filteredMigrations = [...this.migrations];
+
       // Initialize table with migrations
       migrationsTable.initTable(this.filteredMigrations);
       migrationsTable.enableSorting();
@@ -93,7 +156,7 @@ class MigrationsApp {
       console.error('Error in migration search:', error);
       const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
       if (container) {
-        container.innerHTML = `<p class="error">Failed to load migration data.</p>`;
+        container.innerHTML = '<p class="error">Failed to load migration data.</p>';
       }
     }
   }

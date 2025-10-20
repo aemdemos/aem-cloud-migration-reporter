@@ -12,41 +12,41 @@
 /* eslint-disable no-underscore-dangle */
 
 export const sortTable = (data, key, direction) => {
-    const dateKeys = [
-        'firstExtraction',
-        'firstIngestion',
-        'lastExtraction',
-        'lastIngestion',
-        'lstMsgDt',
-    ];
-    const getComparableValue = (val) => {
-        if (dateKeys.includes(key)) {
-            if (!val) return null;
-            const date = new Date(val);
-            return isNaN(date.getTime()) ? null : date;
-        }
-        return val;
-    };
+  const dateKeys = [
+    'firstExtraction',
+    'firstIngestion',
+    'lastExtraction',
+    'lastIngestion',
+    'lstMsgDt',
+  ];
+  const getComparableValue = (val) => {
+    if (dateKeys.includes(key)) {
+      if (!val) return null;
+      const date = new Date(val);
+      return Number.isNaN(date.getTime()) ? null : date;
+    }
+    return val;
+  };
 
-    return [...data].sort((a, b) => {
-        const valueA = getComparableValue(a[key]);
-        const valueB = getComparableValue(b[key]);
+  return [...data].sort((a, b) => {
+    const valueA = getComparableValue(a[key]);
+    const valueB = getComparableValue(b[key]);
 
-        if (valueA === null || valueA === undefined || valueA === '') return direction === 'asc' ? 1 : -1;
-        if (valueB === null || valueB === undefined || valueB === '') return direction === 'asc' ? -1 : 1;
+    if (valueA === null || valueA === undefined || valueA === '') return direction === 'asc' ? 1 : -1;
+    if (valueB === null || valueB === undefined || valueB === '') return direction === 'asc' ? -1 : 1;
 
-        if (typeof valueA === 'string' && typeof valueB === 'string' && !(valueA instanceof Date)) {
-            return direction === 'asc'
-                ? valueA.localeCompare(valueB)
-                : valueB.localeCompare(valueA);
-        }
+    if (typeof valueA === 'string' && typeof valueB === 'string' && !(valueA instanceof Date)) {
+      return direction === 'asc'
+        ? valueA.localeCompare(valueB)
+        : valueB.localeCompare(valueA);
+    }
 
-        if (typeof valueA === 'number' || valueA instanceof Date) {
-            return direction === 'asc' ? valueA - valueB : valueB - valueA;
-        }
+    if (typeof valueA === 'number' || valueA instanceof Date) {
+      return direction === 'asc' ? valueA - valueB : valueB - valueA;
+    }
 
-        return 0;
-    });
+    return 0;
+  });
 };
 
 export const alphaSort = (a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' });
@@ -80,7 +80,7 @@ const hideModal = (modal) => {
   modal.addEventListener(
     'transitionend',
     () => {
-      modal.innerHTML = '<span class="_spinner"></span>';
+      modal.innerHTML = '<span class="spinner"></span>';
       modal.style.display = 'none';
     },
     { once: true },
@@ -171,7 +171,7 @@ export const setupModalDrag = (modal) => {
 
 export const handleModalInteraction = async (cell, channelId, modal, fetchDataCallback) => {
   // Show spinner initially
-  modal.innerHTML = '<span class="_spinner"></span>';
+  modal.innerHTML = '<span class="spinner"></span>';
   modal.style.display = 'block';
   requestAnimationFrame(() => modal.classList.add('show'));
 
