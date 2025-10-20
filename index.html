@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AEM CS Migrations Tracker</title>
+  <link rel="icon" href="./favicon.ico" />
+  <link rel="stylesheet" href="./styles/styles.css" />
+  <link rel="stylesheet" href="./migrations/main.css" />
+  <script src="./scripts/aem.js" type="module"></script>
+  <script src="./scripts/scripts.js" type="module"></script>
+  <script src="./migrations/main.js" type="module"></script>
+    <link rel="stylesheet" href="./migrations/main.css" />
+</head>
+<body class="migrations">
+  <header>
+    <div class="header-row">
+      <h2>
+        <img src="./favicon.ico" alt="Adobe Logo" class="adobe-logo" />
+        AEM Cloud Migrations
+      </h2>
+      <span class="search-wrapper">
+        <label for="customer-search">Search Customer</label>
+        <input type="text" id="customer-search" placeholder="Enter customer name..." />
+      </span>
+    </div>
+  </header>
+  <main>
+    <!-- Migrations Container -->
+    <div id="migrations-container"></div>
+    <div id="modal" class="modal">
+      <span class="_spinner"></span>
+    </div>
+  </main>
+  <footer></footer>
+</body>
+</html>
