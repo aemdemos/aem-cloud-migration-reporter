@@ -12,7 +12,7 @@
 
 import getAllMigrations from './api.js';
 import MigrationsTable from './migrationsTable.js';
-import { ELEMENT_IDS } from './constants.js';
+import {ELEMENT_IDS} from './constants.js';
 import getUserProfile from './userProfile.js';
 
 const migrationsTable = new MigrationsTable();
@@ -57,9 +57,6 @@ class MigrationsApp {
 
       if (email && name) {
         this.userProfile = { email, name };
-      } else {
-        // eslint-disable-next-line no-alert
-        alert('missing email and name query params for local debug');
       }
     }
   }
@@ -90,10 +87,23 @@ class MigrationsApp {
       } catch (error) {
         const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
         if (container) {
-          container.innerHTML = '<p class="error">Failed to get user profile. Please ensure you are logged in.</p>';
+          container.innerHTML = '<p class="error">You are not logged in. Please log in via AEM Sidekick to view migration data.</p>';
         }
-        throw error;
+        const loginError = new Error('User not logged in');
+        loginError.originalError = error;
+        throw loginError;
       }
+    }
+
+    // Check if user profile is still null after attempting to get it
+    if (!this.userProfile) {
+      const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
+      if (container) {
+        container.innerHTML = this.isLocalhost
+          ? '<p class="error">You are not logged in. Please add ?email=you@adobe.com&name=YourFullName to the URL</p>'
+          : '<p class="error">You are not logged in. Please log in to view migration data.</p>';
+      }
+      throw new Error('User not logged in');
     }
   }
 
@@ -154,6 +164,12 @@ class MigrationsApp {
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error in migration search:', error);
+      // Check if error is due to user not being logged in
+      // If so, the login message is already displayed by ensureUserProfile()
+      if (error.message === 'User not logged in') {
+        return; // Don't override the login message
+      }
+      // For other errors, show generic error message
       const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
       if (container) {
         container.innerHTML = '<p class="error">Failed to load migration data.</p>';
