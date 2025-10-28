@@ -19,7 +19,7 @@ const getUserProfile = async () => {
   if (!fetchPromise) {
     fetchPromise = (async () => {
       try {
-        const response = await fetch('https://admin.hlx.page/status/aemdemos/aem-cloud-migration-tracker/main/index.html');
+        const response = await fetch('https://admin.hlx.page/status/aemdemos/aem-cloud-migration-reporter/main/index.html');
         if (response.ok) {
           const data = await response.json();
           cachedUserProfile = data.profile;
