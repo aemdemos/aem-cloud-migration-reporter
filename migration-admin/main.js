@@ -18,9 +18,9 @@ import getUserProfile from './userProfile.js';
 const migrationsTable = new MigrationsTable();
 
 /**
- * AEM Cloud Service Migrations Tracker Application
- * Simplified main application controller
- */
+* AEM Cloud Service Migrations Tracker Application
+* Simplified main application controller
+*/
 class MigrationsApp {
   constructor() {
     this.userProfile = null;

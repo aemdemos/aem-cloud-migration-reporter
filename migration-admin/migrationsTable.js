@@ -63,33 +63,21 @@ class MigrationsTable {
         typeof migration.bpaReportUploads === 'number' ? migration.bpaReportUploads.toString() : '',
         '',
       );
-      // Total Extractions
-      const totalExtractionsCell = MigrationsTable.createCell(
-        typeof migration.totalExtractions === 'number' ? migration.totalExtractions.toString() : '',
-        '',
-      );
       // Total Ingestions
       const totalIngestionsCell = MigrationsTable.createCell(
         typeof migration.totalIngestions === 'number' ? migration.totalIngestions.toString() : '',
         '',
       );
-      // First Extraction
-      const firstExtractionCell = MigrationsTable.createCell(migration.firstExtraction || '', '');
       // First Ingestion
       const firstIngestionCell = MigrationsTable.createCell(migration.firstIngestion || '', '');
-      // Last Extraction
-      const lastExtractionCell = MigrationsTable.createCell(migration.lastExtraction || '', '');
       // Last Ingestion
       const lastIngestionCell = MigrationsTable.createCell(migration.lastIngestion || '', '');
 
       tr.append(
         tenantCell,
         bpaReportUploadsCell,
-        totalExtractionsCell,
         totalIngestionsCell,
-        firstExtractionCell,
         firstIngestionCell,
-        lastExtractionCell,
         lastIngestionCell,
       );
       tbody.appendChild(tr);
@@ -167,11 +155,8 @@ class MigrationsTable {
         <tr>
           <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.BPA_REPORT_UPLOADS}">BPA Report Uploads</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_EXTRACTIONS}">Total Extractions</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_INGESTIONS}">Total Ingestions</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.FIRST_EXTRACTION}">First Extraction</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.FIRST_INGESTION}">First Ingestion</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_EXTRACTION}">Last Extraction</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Last Ingestion</th>
         </tr>
       </thead>

@@ -17,11 +17,8 @@ export const TABLE_CONFIG = {
   COLUMNS: {
     NAME: 'tenant',
     BPA_REPORT_UPLOADS: 'bpaReportUploads',
-    TOTAL_EXTRACTIONS: 'totalExtractions',
     TOTAL_INGESTIONS: 'totalIngestions',
-    FIRST_EXTRACTION: 'firstExtraction',
     FIRST_INGESTION: 'firstIngestion',
-    LAST_EXTRACTION: 'lastExtraction',
     LAST_INGESTION: 'lastIngestion',
   },
 };
