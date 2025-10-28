@@ -87,7 +87,7 @@ class MigrationsApp {
       } catch (error) {
         const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
         if (container) {
-          container.innerHTML = '<p class="error">You are not logged in. Please log in via AEM Sidekick to view migration data.</p>';
+          container.innerHTML = '<p class="error">You are not logged in. Please log in to view migration data.</p>';
         }
         const loginError = new Error('User not logged in');
         loginError.originalError = error;
@@ -101,7 +101,7 @@ class MigrationsApp {
       if (container) {
         container.innerHTML = this.isLocalhost
           ? '<p class="error">You are not logged in. Please add ?email=you@adobe.com&name=YourFullName to the URL</p>'
-          : '<p class="error">You are not logged in. Please log in to view migration data.</p>';
+          : '<p class="error">You are not logged in. Please log in via AEM Sidekick to view migration data.</p>';
       }
       throw new Error('User not logged in');
     }
