@@ -12,13 +12,13 @@
 
 import getAllMigrations from './api.js';
 import MigrationsTable from './migrationsTable.js';
-import {ELEMENT_IDS} from './constants.js';
+import { ELEMENT_IDS } from './constants.js';
 import getUserProfile from './userProfile.js';
 
 const migrationsTable = new MigrationsTable();
 
 /**
-* AEM Cloud Service Migrations Tracker Application
+* AEM Cloud Service Migrations Reporter Application
 * Simplified main application controller
 */
 class MigrationsApp {
