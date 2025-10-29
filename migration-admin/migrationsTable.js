@@ -57,28 +57,10 @@ class MigrationsTable {
       tr.setAttribute('data-migration-id', migration.id);
 
       // Customer Name
-      const tenantCell = MigrationsTable.createCell(migration.tenant || '', '');
-      // BPA Report Uploads
-      const bpaReportUploadsCell = MigrationsTable.createCell(
-        typeof migration.bpaReportUploads === 'number' ? migration.bpaReportUploads.toString() : '',
-        '',
-      );
-      // Total Ingestions
-      const totalIngestionsCell = MigrationsTable.createCell(
-        typeof migration.totalIngestions === 'number' ? migration.totalIngestions.toString() : '',
-        '',
-      );
-      // First Ingestion
-      const firstIngestionCell = MigrationsTable.createCell(migration.firstIngestion || '', '');
-      // Last Ingestion
-      const lastIngestionCell = MigrationsTable.createCell(migration.lastIngestion || '', '');
+      const customerNameCell = MigrationsTable.createCell(migration.customerName || '', '');
 
       tr.append(
-        tenantCell,
-        bpaReportUploadsCell,
-        totalIngestionsCell,
-        firstIngestionCell,
-        lastIngestionCell,
+        customerNameCell
       );
       tbody.appendChild(tr);
     });
@@ -154,10 +136,6 @@ class MigrationsTable {
       <thead>
         <tr>
           <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.BPA_REPORT_UPLOADS}">BPA Report Uploads</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_INGESTIONS}">Total Ingestions</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.FIRST_INGESTION}">First Ingestion</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Last Ingestion</th>
         </tr>
       </thead>
     `;

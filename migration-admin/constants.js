@@ -13,14 +13,10 @@
 // Table Configuration
 export const TABLE_CONFIG = {
   DEFAULT_SORT_DIRECTION: 'asc',
-  DEFAULT_SORT_COLUMN: 'tenant',
+  DEFAULT_SORT_COLUMN: 'customerName',
   COLUMNS: {
-    NAME: 'tenant',
-    BPA_REPORT_UPLOADS: 'bpaReportUploads',
-    TOTAL_INGESTIONS: 'totalIngestions',
-    FIRST_INGESTION: 'firstIngestion',
-    LAST_INGESTION: 'lastIngestion',
-  },
+    NAME: 'customerName',
+  }
 };
 
 // CSS Classes
@@ -38,7 +34,7 @@ export const CSS_CLASSES = {
 export const ELEMENT_IDS = {
   MIGRATIONS_CONTAINER: 'migrations-container',
   CUSTOMER_SEARCH: 'customer-search',
-  NAME: 'tenant',
+  NAME: 'customerName',
   MIGRATION: 'migration',
   MIGRATION_CREATED: 'migration-created',
   BPA_REPORTS_UPLOADED: 'bpa-reports-uploaded',

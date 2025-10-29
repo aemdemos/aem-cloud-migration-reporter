@@ -130,7 +130,7 @@ class MigrationsApp {
       this.filteredMigrations = [...this.migrations];
     } else {
       // eslint-disable-next-line max-len
-      this.filteredMigrations = this.migrations.filter((migration) => migration.tenant && migration.tenant.toLowerCase().includes(lowerSearchTerm));
+      this.filteredMigrations = this.migrations.filter((migration) => migration.customerName && migration.customerName.toLowerCase().includes(lowerSearchTerm));
     }
 
     migrationsTable.initTable(this.filteredMigrations);
@@ -152,7 +152,7 @@ class MigrationsApp {
       // Fetch ingestions
       this.ingestions = await getLast30DaysIngestions();
 
-      // Sort tenants alphabetically for predictable loading
+      // Sort customer Names alphabetically for predictable loading
       this.ingestions.sort((a, b) => a.customerName.localeCompare(b.customerName));
 
       // Initialize filtered ingestions
