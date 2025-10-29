@@ -9,16 +9,5 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-
-import API_ENDPOINT from './config.js';
-
-export const getLast30DaysIngestions = async () => {
-  try {
-    const url = new URL(`${API_ENDPOINT}`);
-    const response = await fetch(url.toString());
-    return response.ok ? await response.json() : [];
-  } catch (e) { /* empty */ }
-  return [];
-};
-
-export default getLast30DaysIngestions;
+const API_ENDPOINT = window.location.href.includes('localhost') ? 'http://localhost:8787' : 'https://aem-cloud-migration-reporter-worker.chrislotton.workers.dev';
+export default API_ENDPOINT;

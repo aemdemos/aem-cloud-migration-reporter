@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import getAllMigrations from './api.js';
+import getLast30DaysIngestions from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import getUserProfile from './userProfile.js';
@@ -149,21 +149,21 @@ class MigrationsApp {
       migrationsTable.initTable([]);
       migrationsTable.enableSorting();
 
-      // Fetch migrations
-      this.migrations = await getAllMigrations();
+      // Fetch ingestions
+      this.ingestions = await getLast30DaysIngestions();
 
       // Sort tenants alphabetically for predictable loading
-      this.migrations.sort((a, b) => a.tenant.localeCompare(b.tenant));
+      this.ingestions.sort((a, b) => a.customerName.localeCompare(b.customerName));
 
-      // Initialize filtered migrations
-      this.filteredMigrations = [...this.migrations];
+      // Initialize filtered ingestions
+      this.filteredIngestions = [...this.ingestions];
 
       // Initialize table with migrations
-      migrationsTable.initTable(this.filteredMigrations);
+      migrationsTable.initTable(this.filteredIngestions);
       migrationsTable.enableSorting();
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.error('Error in migration search:', error);
+      console.error('Error in ingestion search:', error);
       // Check if error is due to user not being logged in
       // If so, the login message is already displayed by ensureUserProfile()
       if (error.message === 'User not logged in') {
