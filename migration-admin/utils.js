@@ -222,10 +222,12 @@ export const summarizeIngestions = (ingestions) => {
 
   for (const ing of ingestions) {
     const customer = ing.customerName || 'Unknown';
+    const imsOrgId = ing.imsOrgId || null;
 
     if (!summaryMap[customer]) {
       summaryMap[customer] = {
         customerName: customer,
+        imsOrgId,                 // store it here
         totalIngestions: 0,
         failedIngestions: 0,
         mostRecent: null,
@@ -233,12 +235,9 @@ export const summarizeIngestions = (ingestions) => {
     }
 
     summaryMap[customer].totalIngestions++;
-    if (ing.status == 'FAILED') summaryMap[customer].failedIngestions++;
+    if (ing.status !== 'FINISHED') summaryMap[customer].failedIngestions++;
 
-    if (
-      !summaryMap[customer].mostRecent ||
-      ing.started > summaryMap[customer].mostRecent.started
-    ) {
+    if (!summaryMap[customer].mostRecent || ing.started > summaryMap[customer].mostRecent.started) {
       summaryMap[customer].mostRecent = ing;
     }
   }

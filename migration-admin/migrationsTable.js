@@ -39,7 +39,9 @@ class MigrationsTable {
     migrations.forEach((migration) => {
       const tr = document.createElement('tr');
       tr.classList.add(CSS_CLASSES.TABLE.MIGRATION_ROW);
-      tr.setAttribute('data-migration-id', migration.id);
+      tr.classList.add(CSS_CLASSES.TABLE.MIGRATION_ROW);
+      tr.setAttribute('data-migration-id', migration.id || '');
+      tr.setAttribute('data-ims-org-id', migration.imsOrgId || '');
 
       const customerNameCell = MigrationsTable.createCell(migration.customerName || '');
       const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
