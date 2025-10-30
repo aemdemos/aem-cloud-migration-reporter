@@ -236,14 +236,14 @@ export const summarizeIngestions = (ingestions) => {
     if (!summaryMap[customer]) {
       summaryMap[customer] = {
         customerName: customer,
-        total: 0,
-        failed: 0,
+        totalIngestions: 0,
+        failedIngestions: 0,
         mostRecent: null,
       };
     }
 
-    summaryMap[customer].total++;
-    if (ing.status !== 'FINISHED') summaryMap[customer].failed++;
+    summaryMap[customer].totalIngestions++;
+    if (ing.status == 'FAILED') summaryMap[customer].failedIngestions++;
 
     if (
       !summaryMap[customer].mostRecent ||

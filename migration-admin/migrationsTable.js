@@ -43,6 +43,7 @@ class MigrationsTable {
     return td;
   }
 
+
   /**
      * Renders the table body with migration data
      * @param {Array} migrations - Array of migration objects
@@ -51,17 +52,27 @@ class MigrationsTable {
     const tbody = this.migrationsContainer.querySelector('tbody');
     tbody.innerHTML = '';
 
+    const formatDate = (timestamp) => {
+      if (!timestamp) return '-';
+      const date = new Date(timestamp);
+      return date.toLocaleDateString(undefined, {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
+    };
+
     migrations.forEach((migration) => {
       const tr = document.createElement('tr');
       tr.classList.add(CSS_CLASSES.TABLE.MIGRATION_ROW);
       tr.setAttribute('data-migration-id', migration.id);
 
-      // Customer Name
-      const customerNameCell = MigrationsTable.createCell(migration.customerName || '', '');
+      const customerNameCell = MigrationsTable.createCell(migration.customerName || '');
+      const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
+      const failedCell = MigrationsTable.createCell(migration.failedIngestions ?? '-', 'numeric');
+      const lastCell = MigrationsTable.createCell(formatDate(migration.mostRecent.started), 'date');
 
-      tr.append(
-        customerNameCell
-      );
+      tr.append(customerNameCell, totalCell, failedCell, lastCell);
       tbody.appendChild(tr);
     });
   }
@@ -98,8 +109,10 @@ class MigrationsTable {
           CSS_CLASSES.TABLE.SORTED_DESC,
         ));
 
-        // Sort data
-        const sortedData = sortTable(migrations, columnKey, newDirection);
+        // Apply initial sorting (Customer Name A → Z)
+        const initialSortKey = TABLE_CONFIG.DEFAULT_SORT_COLUMN;
+        const sortedMigrations = sortTable(migrations, initialSortKey, 'asc'); // force asc
+        document.querySelector(`th[data-sort="${initialSortKey}"]`).classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
 
         // Add the appropriate arrow class
         header.classList.add(
@@ -125,7 +138,6 @@ class MigrationsTable {
     // Create summary wrapper
     const summaryWrapper = document.createElement('div');
     summaryWrapper.classList.add('table-summary-wrapper');
-
     this.migrationsContainer.appendChild(summaryWrapper);
 
     // Create table structure
@@ -133,12 +145,15 @@ class MigrationsTable {
     table.classList.add(CSS_CLASSES.TABLE.STYLED_TABLE);
 
     table.innerHTML = `
-      <thead>
-        <tr>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
-        </tr>
-      </thead>
-    `;
+    <thead>
+      <tr>
+        <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
+        <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL}">Total Ingestions</th>
+        <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED}">Failed Ingestions</th>
+        <th data-sort="${TABLE_CONFIG.COLUMNS.LAST}">Last Ingestion</th>
+      </tr>
+    </thead>
+  `;
 
     const tbody = document.createElement('tbody');
     table.appendChild(tbody);
@@ -149,11 +164,9 @@ class MigrationsTable {
     const initialSortKey = TABLE_CONFIG.DEFAULT_SORT_COLUMN;
     const sortedMigrations = sortTable(migrations, initialSortKey, this.sortDirection);
     document.querySelector(`th[data-sort="${initialSortKey}"]`).classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
-    this.renderTable(sortedMigrations);
-    this.toggleSortDirection();
 
-    // Render initial data
-    this.renderTable(migrations);
+    // Render table once with sorted data
+    this.renderTable(sortedMigrations);
   }
 
   /**

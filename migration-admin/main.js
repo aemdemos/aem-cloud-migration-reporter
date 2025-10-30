@@ -160,7 +160,7 @@ class MigrationsApp {
       summarized.sort((a, b) => a.customerName.localeCompare(b.customerName));
 
       // Initialize filtered ingestions
-      this.filteredIngestions = [...this.summarized];
+      this.filteredIngestions = [...summarized];
 
       // Initialize table with migrations
       migrationsTable.initTable(this.filteredIngestions);

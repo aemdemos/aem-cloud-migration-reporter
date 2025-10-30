@@ -16,6 +16,9 @@ export const TABLE_CONFIG = {
   DEFAULT_SORT_COLUMN: 'customerName',
   COLUMNS: {
     NAME: 'customerName',
+    TOTAL: 'totalIngestions',
+    FAILED: 'failedIngestions',
+    LAST: 'mostRecent',
   }
 };
 
