@@ -11,45 +11,35 @@
  */
 /* eslint-disable no-underscore-dangle */
 
-export const sortTable = (data, key, direction) => {
-  const dateKeys = [
-    'firstExtraction',
-    'firstIngestion',
-    'lastExtraction',
-    'lastIngestion',
-    'lstMsgDt',
-  ];
-  const getComparableValue = (val) => {
-    if (dateKeys.includes(key)) {
-      if (!val) return null;
-      const date = new Date(val);
-      return Number.isNaN(date.getTime()) ? null : date;
-    }
-    return val;
+export const sortTable = (data, key, direction = 'asc') => {
+  const dir = direction === 'asc' ? 1 : -1;
+
+  const getValue = (obj, path) => {
+    // Support nested keys like 'mostRecent.started'
+    return path.split('.').reduce((o, k) => (o ? o[k] : null), obj);
   };
 
   return [...data].sort((a, b) => {
-    const valueA = getComparableValue(a[key]);
-    const valueB = getComparableValue(b[key]);
+    const valA = getValue(a, key);
+    const valB = getValue(b, key);
 
-    if (valueA === null || valueA === undefined || valueA === '') return direction === 'asc' ? 1 : -1;
-    if (valueB === null || valueB === undefined || valueB === '') return direction === 'asc' ? -1 : 1;
+    // Null / undefined handling (put nulls at bottom)
+    if (valA == null && valB != null) return 1;
+    if (valB == null && valA != null) return -1;
+    if (valA == null && valB == null) return 0;
 
-    if (typeof valueA === 'string' && typeof valueB === 'string' && !(valueA instanceof Date)) {
-      return direction === 'asc'
-        ? valueA.localeCompare(valueB)
-        : valueB.localeCompare(valueA);
-    }
+    // Numbers
+    if (typeof valA === 'number' && typeof valB === 'number') return (valA - valB) * dir;
 
-    if (typeof valueA === 'number' || valueA instanceof Date) {
-      return direction === 'asc' ? valueA - valueB : valueB - valueA;
-    }
+    // Dates
+    const dateA = new Date(valA);
+    const dateB = new Date(valB);
+    if (!isNaN(dateA) && !isNaN(dateB)) return (dateA - dateB) * dir;
 
-    return 0;
+    // Strings
+    return String(valA).localeCompare(String(valB)) * dir;
   });
 };
-
-export const alphaSort = (a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' });
 
 const positionModal = (modal, cell) => {
   const rect = cell.getBoundingClientRect();

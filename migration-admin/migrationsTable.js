@@ -1,28 +1,6 @@
-/*
- * Copyright 2025 Adobe. All rights reserved.
- * This file is licensed to you under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License. You may obtain a copy
- * of the License at http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software distributed under
- * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR REPRESENTATIONS
- * OF ANY KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
- */
+import { sortTable } from './utils.js';
+import { TABLE_CONFIG, CSS_CLASSES, ELEMENT_IDS } from './constants.js';
 
-import {
-  sortTable,
-} from './utils.js';
-import {
-  TABLE_CONFIG,
-  CSS_CLASSES,
-  ELEMENT_IDS,
-} from './constants.js';
-
-/**
- * Migrations Table Module
- * Handles rendering and interaction of the migrations table
- */
 class MigrationsTable {
   constructor() {
     this.sortDirection = TABLE_CONFIG.DEFAULT_SORT_DIRECTION;
@@ -30,12 +8,6 @@ class MigrationsTable {
     this.migrationsContainer = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
   }
 
-  /**
-     * Creates a table cell with optional CSS class
-     * @param {string} content - Cell content
-     * @param {string} className - Optional CSS class
-     * @returns {HTMLTableCellElement} The created cell
-     */
   static createCell(content, className = '') {
     const td = document.createElement('td');
     if (className) td.className = className;
@@ -43,11 +15,6 @@ class MigrationsTable {
     return td;
   }
 
-
-  /**
-     * Renders the table body with migration data
-     * @param {Array} migrations - Array of migration objects
-     */
   renderTable(migrations) {
     const tbody = this.migrationsContainer.querySelector('tbody');
     tbody.innerHTML = '';
@@ -55,12 +22,19 @@ class MigrationsTable {
     const formatDate = (timestamp) => {
       if (!timestamp) return '-';
       const date = new Date(timestamp);
-      return date.toLocaleDateString(undefined, {
+      const options = {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
-      });
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false,
+        timeZone: 'UTC', // ensures UTC time
+      };
+      return date.toLocaleString(undefined, options) + ' UTC';
     };
+
 
     migrations.forEach((migration) => {
       const tr = document.createElement('tr');
@@ -70,25 +44,17 @@ class MigrationsTable {
       const customerNameCell = MigrationsTable.createCell(migration.customerName || '');
       const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
       const failedCell = MigrationsTable.createCell(migration.failedIngestions ?? '-', 'numeric');
-      const lastCell = MigrationsTable.createCell(formatDate(migration.mostRecent.started), 'date');
+      const lastCell = MigrationsTable.createCell(formatDate(migration.mostRecent?.started), 'date');
 
       tr.append(customerNameCell, totalCell, failedCell, lastCell);
       tbody.appendChild(tr);
     });
   }
 
-  /**
-     * Toggles the sort direction between ascending and descending
-     */
   toggleSortDirection() {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
   }
 
-  /**
-   * Adds sorting functionality to table headers
-   * @param {HTMLTableElement} table - The table element
-   * @param migrations
-   */
   addSortingToTable(table, migrations) {
     const headers = table.querySelectorAll('th[data-sort]');
     headers.forEach((header) => {
@@ -99,82 +65,67 @@ class MigrationsTable {
 
         // Determine new sort direction BEFORE removing classes
         let newDirection = 'asc';
-        if (header.classList.contains(CSS_CLASSES.TABLE.SORTED_ASC)) {
-          newDirection = 'desc';
-        }
+        if (header.classList.contains(CSS_CLASSES.TABLE.SORTED_ASC)) newDirection = 'desc';
 
         // Remove sort classes from all headers
         headers.forEach((h) => h.classList.remove(
           CSS_CLASSES.TABLE.SORTED_ASC,
-          CSS_CLASSES.TABLE.SORTED_DESC,
+          CSS_CLASSES.TABLE.SORTED_DESC
         ));
 
-        // Apply initial sorting (Customer Name A → Z)
-        const initialSortKey = TABLE_CONFIG.DEFAULT_SORT_COLUMN;
-        const sortedMigrations = sortTable(migrations, initialSortKey, 'asc'); // force asc
-        document.querySelector(`th[data-sort="${initialSortKey}"]`).classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
+        // Sort data
+        const sortedData = sortTable(migrations, columnKey, newDirection);
 
-        // Add the appropriate arrow class
+        // Add arrow class
         header.classList.add(
           newDirection === 'asc'
             ? CSS_CLASSES.TABLE.SORTED_ASC
-            : CSS_CLASSES.TABLE.SORTED_DESC,
+            : CSS_CLASSES.TABLE.SORTED_DESC
         );
 
         this.renderTable(sortedData);
-        // Set the new sort direction for next click
         this.sortDirection = newDirection;
       });
     });
   }
 
-  /**
-     * Initializes the table with migrations data
-     * @param {Array<Object>} migrations - Array of migration objects to display in the table
-     */
   initTable(migrations) {
     this.migrationsContainer.innerHTML = '';
 
-    // Create summary wrapper
     const summaryWrapper = document.createElement('div');
     summaryWrapper.classList.add('table-summary-wrapper');
     this.migrationsContainer.appendChild(summaryWrapper);
 
-    // Create table structure
     const table = document.createElement('table');
     table.classList.add(CSS_CLASSES.TABLE.STYLED_TABLE);
 
     table.innerHTML = `
-    <thead>
-      <tr>
-        <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
-        <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL}">Total Ingestions</th>
-        <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED}">Failed Ingestions</th>
-        <th data-sort="${TABLE_CONFIG.COLUMNS.LAST}">Last Ingestion</th>
-      </tr>
-    </thead>
-  `;
+      <thead>
+        <tr>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL}">Total Ingestions</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED}">Failed Ingestions</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST}">Last Ingestion</th>
+        </tr>
+      </thead>
+    `;
 
     const tbody = document.createElement('tbody');
     table.appendChild(tbody);
     this.addSortingToTable(table, migrations);
     this.migrationsContainer.appendChild(table);
 
-    // Apply initial sorting
-    const initialSortKey = TABLE_CONFIG.DEFAULT_SORT_COLUMN;
-    const sortedMigrations = sortTable(migrations, initialSortKey, this.sortDirection);
-    document.querySelector(`th[data-sort="${initialSortKey}"]`).classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
+    // Initial sort
+    const sortedMigrations = sortTable(migrations, TABLE_CONFIG.DEFAULT_SORT_COLUMN, this.sortDirection);
+    document.querySelector(`th[data-sort="${TABLE_CONFIG.DEFAULT_SORT_COLUMN}"]`)
+    .classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
 
-    // Render table once with sorted data
     this.renderTable(sortedMigrations);
+    this.toggleSortDirection();
   }
 
-  /**
-     * Enables sorting functionality for the table
-     */
   enableSorting() {
     this.isSortingEnabled = true;
-    // Optionally, visually indicate that sorting is enabled (e.g., by adding a class)
   }
 }
 
