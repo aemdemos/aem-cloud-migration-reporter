@@ -14,6 +14,7 @@ import getLast30DaysIngestions from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import getUserProfile from './userProfile.js';
+import summarizeIngestions from './utils.js';
 
 const migrationsTable = new MigrationsTable();
 
@@ -152,11 +153,14 @@ class MigrationsApp {
       // Fetch ingestions
       this.ingestions = await getLast30DaysIngestions();
 
+      // 🔹 Summarize the ingestions by customer
+      const summarized = summarizeIngestions(this.ingestions);
+
       // Sort customer Names alphabetically for predictable loading
-      this.ingestions.sort((a, b) => a.customerName.localeCompare(b.customerName));
+      summarized.sort((a, b) => a.customerName.localeCompare(b.customerName));
 
       // Initialize filtered ingestions
-      this.filteredIngestions = [...this.ingestions];
+      this.filteredIngestions = [...this.summarized];
 
       // Initialize table with migrations
       migrationsTable.initTable(this.filteredIngestions);

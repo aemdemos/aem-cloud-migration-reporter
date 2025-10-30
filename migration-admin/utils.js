@@ -227,6 +227,35 @@ export const escapeHTML = (str) => {
   return div.innerHTML;
 };
 
+export const summarizeIngestions = (ingestions) => {
+  const summaryMap = {};
+
+  for (const ing of ingestions) {
+    const customer = ing.customerName || 'Unknown';
+
+    if (!summaryMap[customer]) {
+      summaryMap[customer] = {
+        customerName: customer,
+        total: 0,
+        failed: 0,
+        mostRecent: null,
+      };
+    }
+
+    summaryMap[customer].total++;
+    if (ing.status !== 'FINISHED') summaryMap[customer].failed++;
+
+    if (
+      !summaryMap[customer].mostRecent ||
+      ing.started > summaryMap[customer].mostRecent.started
+    ) {
+      summaryMap[customer].mostRecent = ing;
+    }
+  }
+
+  return Object.values(summaryMap);
+};
+
 export const renderMembersTable = (channelName, adobeMembers, nonAdobeMembers) => {
   const maxLength = Math.max(adobeMembers.length, nonAdobeMembers.length);
   const rows = Array.from({ length: maxLength }, (_, i) => {
@@ -260,3 +289,5 @@ export const renderMembersTable = (channelName, adobeMembers, nonAdobeMembers) =
     </table>
   `;
 };
+
+export default summarizeIngestions;
