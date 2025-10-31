@@ -14,11 +14,27 @@ import API_ENDPOINT from './config.js';
 
 export const getLast30DaysIngestions = async () => {
   try {
-    const url = new URL(`${API_ENDPOINT}`);
-    // Return the full Response so callers can inspect headers and body as needed
-    return await fetch(url.toString());
-  } catch (e) { /* empty */ }
-  return [];
+    const response = await fetch(`${API_ENDPOINT}/ingestionsLast30Days`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Error fetching ingestions:', e);
+    return [];
+  }
 };
 
-export default getLast30DaysIngestions;
+export const getBpaReports = async (imsOrgId) => {
+  try {
+    const url = new URL(`${API_ENDPOINT}/bpaReports`);
+    if (imsOrgId) url.searchParams.set('imsOrgId', imsOrgId);
+
+    const response = await fetch(url.toString());
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    return await response.json();
+  } catch (e) {
+    console.error('Error fetching BPA reports:', e);
+    return [];
+  }
+};
+
+export default { getLast30DaysIngestions, getBpaReports };

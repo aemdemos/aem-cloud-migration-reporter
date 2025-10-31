@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import { getLast30DaysIngestions } from './api.js';
+import { getLast30DaysIngestions, getBpaReports } from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import getUserProfile from './userProfile.js';
@@ -28,7 +28,6 @@ class MigrationsApp {
     this.migrations = [];
     this.filteredMigrations = [];
     this.ingestions = [];
-    this.filteredIngestions = [];
     this.isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
     this.dataLoaded = false;
     this.init();
@@ -193,7 +192,6 @@ class MigrationsApp {
           body = null;
         }
       } else if (Array.isArray(resp)) {
-        // previous shape: api returned the array directly
         body = resp;
       } else {
         body = resp;
@@ -220,7 +218,7 @@ class MigrationsApp {
       }
       const total = totalHeader ? parseInt(totalHeader, 10) : this.ingestions.length;
 
-      // 🔹 Summarize the ingestions by customer
+      // Summarize the ingestions by customer
       const summarized = summarizeIngestions(this.ingestions);
 
       // Sort customer Names alphabetically for predictable loading
@@ -230,24 +228,46 @@ class MigrationsApp {
       this.migrations = [...summarized];
       this.filteredMigrations = [...summarized];
 
-      // Initialize table with migrations (this creates the table-summary-wrapper)
+      // Initialize table with migrations
       migrationsTable.initTable(this.filteredMigrations);
       migrationsTable.enableSorting();
 
-      // Render the ingestions count after the wrapper is created
+      // Render the ingestions count
       this.renderIngestionsCount(Number.isNaN(total) ? 0 : total);
+
+      // 🔹 Fetch BPA reports for each unique imsOrgId
+      const imsOrgIds = [...new Set(this.ingestions.map(i => i.imsOrgId).filter(Boolean))];
+
+      const bpaReportsMap = {};
+      await Promise.all(
+        imsOrgIds.map(async (id) => {
+          try {
+            const reports = await getBpaReports(id);
+            bpaReportsMap[id] = reports;
+          } catch (e) {
+            console.error(`Failed to fetch BPA reports for imsOrgId ${id}:`, e);
+            bpaReportsMap[id] = [];
+          }
+        })
+      );
+
+      // Merge BPA report counts into summarized migrations
+      this.migrations = this.migrations.map((migration) => {
+        const reports = bpaReportsMap[migration.imsOrgId] || [];
+        return { ...migration, bpaReportsCount: reports.length, bpaReports: reports };
+      });
+
+      // Refresh filtered table with BPA info
+      this.filteredMigrations = [...this.migrations];
+      migrationsTable.initTable(this.filteredMigrations);
+      migrationsTable.enableSorting();
 
       // Mark data as loaded
       this.dataLoaded = true;
     } catch (error) {
-      // eslint-disable-next-line no-console
       console.error('Error in ingestion search:', error);
-      // Check if error is due to user not being logged in
-      // If so, the login message is already displayed by ensureUserProfile()
-      if (error.message === 'User not logged in') {
-        return; // Don't override the login message
-      }
-      // For other errors, show generic error message
+      if (error.message === 'User not logged in') return;
+
       const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
       if (container) {
         container.innerHTML = '<p class="error">Failed to load migration data.</p>';
