@@ -121,8 +121,18 @@ async function loadLazy(doc) {
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
   if (hash && element) element.scrollIntoView();
 
-  loadHeader(doc.querySelector('header'));
-  loadFooter(doc.querySelector('footer'));
+  const headerEl = doc.querySelector('header');
+  if (headerEl) {
+    // loadHeader appends the header block; only call if a <header> exists
+    /* eslint-disable-next-line no-console */
+    loadHeader(headerEl).catch((err) => { console.error('Failed to load header', err); });
+  }
+
+  const footerEl = doc.querySelector('footer');
+  if (footerEl) {
+    /* eslint-disable-next-line no-console */
+    loadFooter(footerEl).catch((err) => { console.error('Failed to load footer', err); });
+  }
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();

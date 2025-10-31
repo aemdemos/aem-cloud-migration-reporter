@@ -15,8 +15,8 @@ import API_ENDPOINT from './config.js';
 export const getLast30DaysIngestions = async () => {
   try {
     const url = new URL(`${API_ENDPOINT}`);
-    const response = await fetch(url.toString());
-    return response.ok ? await response.json() : [];
+    // Return the full Response so callers can inspect headers and body as needed
+    return await fetch(url.toString());
   } catch (e) { /* empty */ }
   return [];
 };

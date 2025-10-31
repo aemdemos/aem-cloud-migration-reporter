@@ -1,31 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AEM CS Migrations Reporter</title>
   <link rel="icon" href="./favicon.ico" />
-  <link rel="stylesheet" href="./styles/styles.css" />
-  <link rel="stylesheet" href="./migration-admin/main.css" />
   <script src="./scripts/aem.js" type="module"></script>
   <script src="./scripts/scripts.js" type="module"></script>
+  <link rel="stylesheet" href="./styles/styles.css" />
   <script src="./migration-admin/main.js" type="module"></script>
-    <link rel="stylesheet" href="./migration-admin/main.css" />
+  <link rel="stylesheet" href="./migration-admin/main.css" />
 </head>
-<body class="migrations">
+
+<body class="migration-admin">
   <main>
-    <div class="header-row">
-      <h2>
-        <img src="./favicon.ico" alt="Adobe Logo" class="adobe-logo" />
-        AEM Cloud Migrations - Last 30 Days
-      </h2>
+    <div class="title-container">
+        <h2><img src="./favicon.ico" alt="Adobe Logo" class="adobe-logo" /> AEM Cloud Migrations Reporter </h2>
     </div>
+    <!-- Search Filters -->
+    <div class="search-filters">
+      <div>
+        <label for="customer-search">Search Customer</label>
+        <input type="text" id="customer-search" placeholder="Enter customer name..." />
+      </div>
+    </div>
+
     <!-- Migrations Container -->
-    <div id="migrations-container"></div>
+    <div id="migrations-container">
+    </div>
+
     <div id="modal" class="modal">
       <span class="spinner"></span>
     </div>
+
   </main>
   <footer></footer>
 </body>
+
+
 </html>

@@ -9,13 +9,86 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
-.migrations #migrations-container {
+
+.migration-admin .title-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 32px 0 24px;
+}
+
+.migration-admin .title-container .adobe-logo {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+}
+
+
+/* Search filters */
+.migration-admin .search-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: center;
+  margin: 24px 0 32px;
+  padding: 0 24px;
+}
+
+.migration-admin .search-filters > div {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 240px;
+}
+
+.migration-admin .search-filters label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.migration-admin .search-filters input {
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: #fff;
+  transition: all 0.2s ease;
+}
+
+.migration-admin .search-filters input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgb(37 99 235 / 10%);
+}
+
+.migration-admin .search-filters input::placeholder {
+  color: #9ca3af;
+}
+
+.migration-admin #migrations-container {
     margin-top: 32px;
-    background: #f6f8fa;
+    background: transparent;
     border-radius: 16px;
-    box-shadow: 0 4px 24px 0 rgb(0 0 0 / 8%);
-    padding: 40px 32px;
-    border: 1px solid #e3e7ed;
+    padding: 20px 0;
+    border: none;
+}
+
+/* Table Summary */
+.table-summary {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Error message styling */
+.migration-admin #migrations-container .error {
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    padding: 16px 20px;
+    border-radius: 8px;
+    font-size: 0.95rem;
 }
 
 /* Table */
@@ -23,28 +96,28 @@
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
-    font-family: 'Adobe Clean', 'Segoe UI', Arial, sans-serif;
-    font-size: 1rem;
+    font-family: Inter, 'Adobe Clean', 'Segoe UI', Arial, sans-serif;
+    font-size: 0.95rem;
     background: #fff;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 6%);
-    border: 1px solid #e3e7ed;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+    border: 1px solid #e5e7eb;
 }
 
 .styled-table thead {
-    background-color: #f3f6fb;
+    background-color: #f9fafb;
     text-align: left;
     font-weight: 600;
-    color: #22223b;
-    border-bottom: 2px solid #e3e7ed;
-    padding-top: 24px;
+    color: #6b7280;
+    border-bottom: 2px solid #e5e7eb;
+    padding-top: 12px;
 }
 
 .styled-table th, .styled-table td {
-    padding: 18px 16px;
-    border-bottom: 1px solid #e3e7ed;
-    background: none;
+    padding: 14px 16px;
+    border-bottom: 1px solid #f3f4f6;
+    background: transparent;
 }
 
 .styled-table th {
@@ -53,7 +126,16 @@
     cursor: pointer;
     user-select: none;
     padding-right: 32px;
-    background: #f3f6fb;
+    background: #f9fafb;
+    color: #374151;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+}
+
+.styled-table td {
+    color: #1f2937;
+    font-weight: 400;
 }
 
 .styled-table th:first-child, .styled-table td:first-child {
@@ -65,11 +147,12 @@
 }
 
 .styled-table tbody tr:nth-child(even) {
-    background-color: #f5f6fa;
+    background-color: #fafafa;
 }
 
 .styled-table tbody tr:hover {
-    background-color: #eaf0fb;
+    background-color: #f0f9ff;
+    transition: background-color 0.2s ease;
 }
 
 .styled-table th.sorted-asc::after,
@@ -87,14 +170,15 @@
 }
 
 .styled-table th.sorted-asc::after {
-    background-image: url('data:image/svg+xml;utf8,<svg width=\"14\" height=\"14\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 4l4 6H3z\" fill=\"%23007aff\"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg width=\"14\" height=\"14\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 4l4 6H3z\" fill=\"%232563eb\"/></svg>');
 }
 
 .styled-table th.sorted-desc::after {
-    background-image: url('data:image/svg+xml;utf8,<svg width=\"14\" height=\"14\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l-4-6h8z\" fill=\"%23007aff\"/></svg>');
+    background-image: url('data:image/svg+xml;utf8,<svg width=\"14\" height=\"14\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l-4-6h8z\" fill=\"%232563eb\"/></svg>');
 }
 
 .styled-table th:not(.sorted-asc, .sorted-desc)::after {
     content: '';
     background: none;
 }
+

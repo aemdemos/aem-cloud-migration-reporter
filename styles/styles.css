@@ -38,6 +38,14 @@
 
   /* nav height */
   --nav-height: 64px;
+
+  /* ===== New theme overrides to match slack-admin style ===== */
+  --app-bg: #0f1724; /* dark background */
+  --card-bg: #0b1220; /* dark card bg */
+  --panel-bg: #0b1220;
+  --muted: #9ca3af;
+  --accent: #0ea5e9;
+  --content-bg: #0b1220;
 }
 
 /* fallback fonts */
@@ -71,9 +79,9 @@
 }
 
 body {
-  background: #f5f6fa;
+  background: #f9fafb;
   color: var(--text-color);
-    font-family: var(--body-font-family), 'Adobe Clean', 'Segoe UI', Arial, sans-serif;
+  font-family: var(--body-font-family), 'Adobe Clean', 'Segoe UI', Arial, sans-serif;
   margin: 0;
   min-height: 100vh;
 }
@@ -142,11 +150,11 @@ pre {
 
 main {
   max-width: 1100px;
-  margin: 40px auto 0;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 4px 24px 0 rgb(0 0 0 / 7%);
-  padding: 32px 40px 40px;
+  margin: 28px auto;
+  padding: 0 20px;
+  background: transparent; /* use dark page background */
+  border-radius: 0;
+  box-shadow: none;
 }
 
 main > div {
@@ -173,8 +181,7 @@ a:hover {
 }
 
 /* buttons */
-a.button:any-link,
-button {
+button, a.button, .button {
   transition: background 0.2s, box-shadow 0.2s;
   box-shadow: 0 2px 8px 0 rgb(59 99 251 / 8%);
   display: inline-block;
@@ -335,4 +342,17 @@ main .section.highlight {
   background-color: var(--light-color);
   margin: 0;
   padding: 40px 0;
+}
+
+/* Cards and panels */
+.migrations #migrations-container {
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}
+
+/* Keep main content white panels inside darker background */
+.styled-table,
+.header-ingestions-card {
+  background: linear-gradient(180deg, #07101b 0%, #081523 100%);
 }

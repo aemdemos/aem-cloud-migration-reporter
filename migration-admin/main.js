@@ -10,11 +10,11 @@
  * governing permissions and limitations under the License.
  */
 
-import getLast30DaysIngestions from './api.js';
+import { getLast30DaysIngestions } from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import getUserProfile from './userProfile.js';
-import summarizeIngestions from './utils.js';
+import { summarizeIngestions } from './utils.js';
 
 const migrationsTable = new MigrationsTable();
 
@@ -27,6 +27,8 @@ class MigrationsApp {
     this.userProfile = null;
     this.migrations = [];
     this.filteredMigrations = [];
+    this.ingestions = [];
+    this.filteredIngestions = [];
     this.isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
     this.init();
   }
@@ -151,7 +153,45 @@ class MigrationsApp {
       migrationsTable.enableSorting();
 
       // Fetch ingestions
-      this.ingestions = await getLast30DaysIngestions();
+      const resp = await getLast30DaysIngestions();
+
+      let headers = null;
+      let body;
+
+      if (typeof Response !== 'undefined' && resp instanceof Response) {
+        headers = resp.headers;
+        try {
+          body = await resp.json();
+        } catch (e) {
+          body = null;
+        }
+      } else if (Array.isArray(resp)) {
+        // previous shape: api returned the array directly
+        body = resp;
+      } else {
+        body = resp;
+      }
+
+      // Normalize ingestions array
+      if (Array.isArray(body)) {
+        this.ingestions = body;
+      } else if (body && Array.isArray(body.ingestions)) {
+        this.ingestions = body.ingestions;
+      } else {
+        this.ingestions = [];
+      }
+
+      // Extract total from header
+      let totalHeader = null;
+      if (headers) {
+        if (typeof headers.get === 'function') {
+          totalHeader = headers.get('X-Ingestions-Count');
+        } else {
+          const key = Object.keys(headers).find((k) => k.toLowerCase() === 'x-ingestions-count');
+          totalHeader = key ? headers[key] : undefined;
+        }
+      }
+      const total = totalHeader ? parseInt(totalHeader, 10) : this.ingestions.length;
 
       // 🔹 Summarize the ingestions by customer
       const summarized = summarizeIngestions(this.ingestions);
@@ -162,9 +202,12 @@ class MigrationsApp {
       // Initialize filtered ingestions
       this.filteredIngestions = [...summarized];
 
-      // Initialize table with migrations
+      // Initialize table with migrations (this creates the table-summary-wrapper)
       migrationsTable.initTable(this.filteredIngestions);
       migrationsTable.enableSorting();
+
+      // Render the ingestions count after the wrapper is created
+      this.renderIngestionsCount(Number.isNaN(total) ? 0 : total);
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error in ingestion search:', error);
@@ -179,6 +222,28 @@ class MigrationsApp {
         container.innerHTML = '<p class="error">Failed to load migration data.</p>';
       }
     }
+  }
+
+  /**
+   * Render total ingestions count in the table-summary
+   */
+  // eslint-disable-next-line class-methods-use-this
+  renderIngestionsCount(total) {
+    // Find the table-summary-wrapper
+    const summaryWrapper = document.querySelector('.table-summary-wrapper');
+    if (!summaryWrapper) return;
+
+    // Clear and create the summary content
+    summaryWrapper.innerHTML = '';
+
+    const summary = document.createElement('div');
+    summary.className = 'table-summary';
+    summary.innerHTML = `
+      <span class="summary-label">Ingestions (Last 30 Days):</span>
+      <span class="summary-value">${Number.isFinite(total) ? total : 0}</span>
+    `;
+
+    summaryWrapper.appendChild(summary);
   }
 }
 
