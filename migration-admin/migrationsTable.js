@@ -123,7 +123,6 @@ class MigrationsTable {
     .classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
 
     this.renderTable(sortedMigrations);
-    this.toggleSortDirection();
   }
 
   enableSorting() {
