@@ -30,6 +30,7 @@ class MigrationsApp {
     this.ingestions = [];
     this.filteredIngestions = [];
     this.isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+    this.dataLoaded = false;
     this.init();
   }
 
@@ -41,12 +42,7 @@ class MigrationsApp {
     this.setupEventListeners();
     MigrationsApp.setupSidekickLogout();
 
-    // Load the migration table as soon as the app initializes
-    // Don't ignore the promise; handle errors globally if needed
-    this.startMigrationSearch().catch((error) => {
-      // eslint-disable-next-line no-console
-      console.error('Unhandled error in startMigrationSearch:', error);
-    });
+    // Don't load data automatically - wait for Enter key press
   }
 
   /**
@@ -115,11 +111,42 @@ class MigrationsApp {
    */
   setupEventListeners() {
     const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
-    if (customerSearch) {
-      customerSearch.addEventListener('input', (e) => {
-        this.filterMigrations(e.target.value);
+    const searchButton = document.getElementById('search-button');
+
+    // Handle search button click
+    if (searchButton) {
+      searchButton.addEventListener('click', () => {
+        if (!this.dataLoaded) {
+          // Initial load
+          this.startMigrationSearch().catch((error) => {
+            // eslint-disable-next-line no-console
+            console.error('Unhandled error in startMigrationSearch:', error);
+          });
+        } else if (customerSearch) {
+          // Filter after data is loaded
+          this.filterMigrations(customerSearch.value);
+        }
       });
     }
+
+    if (customerSearch) {
+      // Filter when Enter is pressed in the search field (after data is loaded)
+      customerSearch.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && this.dataLoaded) {
+          this.filterMigrations(e.target.value);
+        }
+      });
+    }
+
+    // Listen for Enter key press anywhere on the page to load data initially
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !this.dataLoaded) {
+        this.startMigrationSearch().catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Unhandled error in startMigrationSearch:', error);
+        });
+      }
+    });
   }
 
   /**
@@ -199,15 +226,19 @@ class MigrationsApp {
       // Sort customer Names alphabetically for predictable loading
       summarized.sort((a, b) => a.customerName.localeCompare(b.customerName));
 
-      // Initialize filtered ingestions
-      this.filteredIngestions = [...summarized];
+      // Store the summarized data in migrations for filtering
+      this.migrations = [...summarized];
+      this.filteredMigrations = [...summarized];
 
       // Initialize table with migrations (this creates the table-summary-wrapper)
-      migrationsTable.initTable(this.filteredIngestions);
+      migrationsTable.initTable(this.filteredMigrations);
       migrationsTable.enableSorting();
 
       // Render the ingestions count after the wrapper is created
       this.renderIngestionsCount(Number.isNaN(total) ? 0 : total);
+
+      // Mark data as loaded
+      this.dataLoaded = true;
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error('Error in ingestion search:', error);
