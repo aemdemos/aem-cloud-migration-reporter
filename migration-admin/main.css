@@ -47,7 +47,14 @@
   color: #4b5563;
 }
 
+.migration-admin .search-filters .search-input-wrapper {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
 .migration-admin .search-filters input {
+  flex: 1;
   padding: 10px 16px;
   border: 1px solid #d1d5db;
   border-radius: 8px;
@@ -64,6 +71,37 @@
 
 .migration-admin .search-filters input::placeholder {
   color: #9ca3af;
+}
+
+.migration-admin .search-filters .search-button {
+  padding: 10px 24px;
+  background: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.migration-admin .search-filters .search-button:hover {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgb(37 99 235 / 20%);
+}
+
+.migration-admin .search-filters .search-button:active {
+  transform: translateY(0);
+}
+
+.migration-admin .search-filters .search-instructions {
+  font-size: 0.8rem;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 4px;
+  display: block;
 }
 
 .migration-admin #migrations-container {
