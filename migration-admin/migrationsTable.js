@@ -44,11 +44,12 @@ class MigrationsTable {
       tr.setAttribute('data-ims-org-id', migration.imsOrgId || '');
 
       const customerNameCell = MigrationsTable.createCell(migration.customerName || '');
+      const lastBpaCell = MigrationsTable.createCell(formatDate(migration.lastBpaReport ?? '-'), 'date');
       const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
       const failedCell = MigrationsTable.createCell(migration.failedIngestions ?? '-', 'numeric');
-      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion), 'date');
+      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion ?? '-'), 'date');
 
-      tr.append(customerNameCell, totalCell, failedCell, lastCell);
+      tr.append(customerNameCell, lastBpaCell, totalCell, failedCell, lastCell);
       tbody.appendChild(tr);
     });
   }
@@ -105,9 +106,10 @@ class MigrationsTable {
       <thead>
         <tr>
           <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_BPA_UPLOAD}">Last BPA Upload</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL}">Total Ingestions</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED}">Failed Ingestions</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST}">Last Ingestion Started</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Last Ingestion Started</th>
         </tr>
       </thead>
     `;
