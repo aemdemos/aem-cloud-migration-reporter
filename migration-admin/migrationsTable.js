@@ -54,7 +54,7 @@ class MigrationsTable {
       const lastBpaCell = MigrationsTable.createCell(formatDate(migration.bpaReportUploaded), 'date');
       const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
       const failedCell = MigrationsTable.createCell(migration.failedIngestions ?? '-', 'numeric');
-      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion, true), 'date');
+      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion), 'date');
 
       tr.append(customerNameCell, lastBpaCell, totalCell, failedCell, lastCell);
       tbody.appendChild(tr);
