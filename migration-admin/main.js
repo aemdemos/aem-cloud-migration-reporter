@@ -38,11 +38,17 @@ class MigrationsApp {
    * Initialize the application
    */
   init() {
-    this.setupUserProfile();
-    this.setupEventListeners();
-    MigrationsApp.setupSidekickLogout();
+    try {
+      this.setupUserProfile();
+      this.setupEventListeners();
+      MigrationsApp.setupSidekickLogout();
 
-    // Don't load data automatically - wait for Enter key press
+      // Don't load data automatically - wait for Enter key press
+    } catch (error) {
+      // Error already handled in setupUserProfile (alert shown, UI disabled)
+      // eslint-disable-next-line no-console
+      console.error('Initialization failed:', error.message);
+    }
   }
 
   /**
@@ -56,7 +62,41 @@ class MigrationsApp {
 
       if (email && name) {
         this.userProfile = { email, name };
+      } else {
+        // Alert and prevent user from continuing if params are missing
+        // eslint-disable-next-line no-alert
+        alert('Email and name parameters are required for localhost development.\n\nPlease add them to the URL:\n?email=you@adobe.com&name=YourFullName');
+
+        // Disable the UI
+        this.disableUI();
+
+        // Throw error to prevent further initialization
+        throw new Error('Missing required URL parameters: email and name');
       }
+    }
+  }
+
+  /**
+   * Disable the UI when validation fails
+   */
+  // eslint-disable-next-line class-methods-use-this
+  disableUI() {
+    // Disable search input
+    const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
+    if (customerSearch) {
+      customerSearch.disabled = true;
+    }
+
+    // Disable search button
+    const searchButton = document.getElementById('search-button');
+    if (searchButton) {
+      searchButton.disabled = true;
+    }
+
+    // Show error message in the container
+    const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
+    if (container) {
+      container.innerHTML = '<p class="error">Access denied. Please add email and name parameters to the URL.</p>';
     }
   }
 
@@ -217,7 +257,6 @@ class MigrationsApp {
       }
       const total = totalHeader ? parseInt(totalHeader, 10) : this.migrations.length;
 
-
       // Sort customer Names alphabetically for predictable loading
       this.migrations.sort((a, b) => a.customerName.localeCompare(b.customerName));
 
@@ -236,7 +275,6 @@ class MigrationsApp {
       // Mark data as loaded
       this.dataLoaded = true;
     } catch (error) {
-      console.error('Error in ingestion search:', error);
       if (error.message === 'User not logged in') return;
 
       const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
