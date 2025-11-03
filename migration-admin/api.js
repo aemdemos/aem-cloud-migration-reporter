@@ -12,27 +12,13 @@
 
 import API_ENDPOINT from './config.js';
 
-export const getLast30DaysIngestions = async () => {
+export const getCustomerMigrationInfoLast30Days = async () => {
   try {
-    const response = await fetch(`${API_ENDPOINT}/ingestionsLast30Days`);
+    const response = await fetch(`${API_ENDPOINT}`);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   } catch (e) {
-    console.error('Error fetching ingestions:', e);
-    return [];
-  }
-};
-
-export const getBpaReports = async (imsOrgId) => {
-  try {
-    const url = new URL(`${API_ENDPOINT}/bpaReports`);
-    if (imsOrgId) url.searchParams.set('imsOrgId', imsOrgId);
-
-    const response = await fetch(url.toString());
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    return await response.json();
-  } catch (e) {
-    console.error('Error fetching BPA reports:', e);
+    console.error('Error fetching customer migration info:', e);
     return [];
   }
 };

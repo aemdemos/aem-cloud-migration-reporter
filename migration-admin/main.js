@@ -10,7 +10,11 @@
  * governing permissions and limitations under the License.
  */
 
-import { getLast30DaysIngestions, getBpaReports } from './api.js';
+import {
+  getLast30DaysIngestions,
+  getBpaReports,
+  getCustomerMigrationInfoLast30Days
+} from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import getUserProfile from './userProfile.js';
@@ -179,7 +183,7 @@ class MigrationsApp {
       migrationsTable.enableSorting();
 
       // Fetch ingestions
-      const resp = await getLast30DaysIngestions();
+      const resp = await getCustomerMigrationInfoLast30Days();
 
       let headers = null;
       let body;
@@ -197,13 +201,11 @@ class MigrationsApp {
         body = resp;
       }
 
-      // Normalize ingestions array
+      // Normalize migrations array
       if (Array.isArray(body)) {
-        this.ingestions = body;
-      } else if (body && Array.isArray(body.ingestions)) {
-        this.ingestions = body.ingestions;
+        this.migrations = body;
       } else {
-        this.ingestions = [];
+        this.migrations = [];
       }
 
       // Extract total from header
@@ -216,17 +218,13 @@ class MigrationsApp {
           totalHeader = key ? headers[key] : undefined;
         }
       }
-      const total = totalHeader ? parseInt(totalHeader, 10) : this.ingestions.length;
+      const total = totalHeader ? parseInt(totalHeader, 10) : this.migrations.length;
 
-      // Summarize the ingestions by customer
-      const summarized = summarizeIngestions(this.ingestions);
 
       // Sort customer Names alphabetically for predictable loading
-      summarized.sort((a, b) => a.customerName.localeCompare(b.customerName));
+      this.migrations.sort((a, b) => a.customerName.localeCompare(b.customerName));
 
-      // Store the summarized data in migrations for filtering
-      this.migrations = [...summarized];
-      this.filteredMigrations = [...summarized];
+      this.filteredMigrations = [...this.migrations];
 
       // Initialize table with migrations
       migrationsTable.initTable(this.filteredMigrations);
@@ -235,30 +233,6 @@ class MigrationsApp {
       // Render the ingestions count
       this.renderIngestionsCount(Number.isNaN(total) ? 0 : total);
 
-      // 🔹 Fetch BPA reports for each unique imsOrgId
-      const imsOrgIds = [...new Set(this.ingestions.map(i => i.imsOrgId).filter(Boolean))];
-
-      const bpaReportsMap = {};
-      await Promise.all(
-        imsOrgIds.map(async (id) => {
-          try {
-            const reports = await getBpaReports(id);
-            bpaReportsMap[id] = reports;
-          } catch (e) {
-            console.error(`Failed to fetch BPA reports for imsOrgId ${id}:`, e);
-            bpaReportsMap[id] = [];
-          }
-        })
-      );
-
-      // Merge BPA report counts into summarized migrations
-      this.migrations = this.migrations.map((migration) => {
-        const reports = bpaReportsMap[migration.imsOrgId] || [];
-        return { ...migration, bpaReportsCount: reports.length, bpaReports: reports };
-      });
-
-      // Refresh filtered table with BPA info
-      this.filteredMigrations = [...this.migrations];
       migrationsTable.initTable(this.filteredMigrations);
       migrationsTable.enableSorting();
 
