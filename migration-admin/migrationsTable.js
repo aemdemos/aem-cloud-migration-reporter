@@ -52,11 +52,12 @@ class MigrationsTable {
 
       const customerNameCell = MigrationsTable.createCell(migration.customerName || '');
       const lastBpaCell = MigrationsTable.createCell(formatDate(migration.bpaReportUploaded), 'date');
+      const firstCell = MigrationsTable.createCell(formatDate(migration.firstIngestion), 'date');
+      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion), 'date');
       const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
       const failedCell = MigrationsTable.createCell(migration.failedIngestions ?? '-', 'numeric');
-      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion), 'date');
 
-      tr.append(customerNameCell, lastBpaCell, totalCell, failedCell, lastCell);
+      tr.append(customerNameCell, lastBpaCell, firstCell, lastCell, totalCell, failedCell);
       tbody.appendChild(tr);
     });
   }
@@ -114,9 +115,10 @@ class MigrationsTable {
         <tr>
           <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_BPA_UPLOAD}">Last BPA Upload</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL}">Total Ingestions</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED}">Failed Ingestions</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.FIRST_INGESTION}">First Ingestion</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Last Ingestion</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_INGESTIONS}">Total Ingestions</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED_INGESTIONS}">Failed Ingestions</th>
         </tr>
       </thead>
     `;

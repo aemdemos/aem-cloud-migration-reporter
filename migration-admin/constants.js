@@ -17,8 +17,9 @@ export const TABLE_CONFIG = {
   COLUMNS: {
     NAME: 'customerName',
     LAST_BPA_UPLOAD: 'lastBPAReportUpload',
-    TOTAL: 'totalIngestions',
-    FAILED: 'failedIngestions',
+    FIRST_INGESTION: 'firstIngestion',
+    TOTAL_INGESTIONS: 'totalIngestions',
+    FAILED_INGESTIONS: 'failedIngestions',
     LAST_INGESTION: 'lastIngestion',
   }
 };
