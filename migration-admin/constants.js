@@ -16,7 +16,7 @@ export const TABLE_CONFIG = {
   DEFAULT_SORT_COLUMN: 'customerName',
   COLUMNS: {
     NAME: 'customerName',
-    LAST_BPA_UPLOAD: 'lastBPAReportUpload',
+    LAST_BPA_UPLOAD: 'bpaReportUploaded',
     FIRST_INGESTION: 'firstIngestion',
     TOTAL_INGESTIONS: 'totalIngestions',
     FAILED_INGESTIONS: 'failedIngestions',
