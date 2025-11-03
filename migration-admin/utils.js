@@ -15,7 +15,7 @@ export const sortTable = (data, key, direction = 'asc') => {
   const dir = direction === 'asc' ? 1 : -1;
 
   const getValue = (obj, path) => {
-    // Support nested keys like 'mostRecent.started'
+    // Support nested keys like 'lastIngestion'
     return path.split('.').reduce((o, k) => (o ? o[k] : null), obj);
   };
 

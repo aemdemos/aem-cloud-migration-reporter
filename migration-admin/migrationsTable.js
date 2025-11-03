@@ -46,7 +46,7 @@ class MigrationsTable {
       const customerNameCell = MigrationsTable.createCell(migration.customerName || '');
       const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
       const failedCell = MigrationsTable.createCell(migration.failedIngestions ?? '-', 'numeric');
-      const lastCell = MigrationsTable.createCell(formatDate(migration.mostRecent?.started), 'date');
+      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion), 'date');
 
       tr.append(customerNameCell, totalCell, failedCell, lastCell);
       tbody.appendChild(tr);

@@ -18,7 +18,7 @@ export const TABLE_CONFIG = {
     NAME: 'customerName',
     TOTAL: 'totalIngestions',
     FAILED: 'failedIngestions',
-    LAST: 'mostRecent.started',
+    LAST: 'lastIngestion',
   }
 };
 
