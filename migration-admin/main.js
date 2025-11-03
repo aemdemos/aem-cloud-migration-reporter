@@ -43,7 +43,7 @@ class MigrationsApp {
       this.setupEventListeners();
       MigrationsApp.setupSidekickLogout();
 
-      // Don't load data automatically - wait for Enter key press
+      // Don't load data automatically - wait for user to search
     } catch (error) {
       // Error already handled in setupUserProfile (alert shown, UI disabled)
       // eslint-disable-next-line no-console
@@ -150,37 +150,21 @@ class MigrationsApp {
    * Set up event listeners for search and filters
    */
   setupEventListeners() {
-    const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
     const searchButton = document.getElementById('search-button');
 
-    // Handle search button click
+    // Handle search button click - always load fresh data
     if (searchButton) {
       searchButton.addEventListener('click', () => {
-        if (!this.dataLoaded) {
-          // Initial load
-          this.startMigrationSearch().catch((error) => {
-            // eslint-disable-next-line no-console
-            console.error('Unhandled error in startMigrationSearch:', error);
-          });
-        } else if (customerSearch) {
-          // Filter after data is loaded
-          this.filterMigrations(customerSearch.value);
-        }
+        this.startMigrationSearch().catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Unhandled error in startMigrationSearch:', error);
+        });
       });
     }
 
-    if (customerSearch) {
-      // Filter when Enter is pressed in the search field (after data is loaded)
-      customerSearch.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' && this.dataLoaded) {
-          this.filterMigrations(e.target.value);
-        }
-      });
-    }
-
-    // Listen for Enter key press anywhere on the page to load data initially
+    // Listen for Enter key press anywhere on the page - always load fresh data
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && !this.dataLoaded) {
+      if (e.key === 'Enter') {
         this.startMigrationSearch().catch((error) => {
           // eslint-disable-next-line no-console
           console.error('Unhandled error in startMigrationSearch:', error);
@@ -260,17 +244,13 @@ class MigrationsApp {
       // Sort customer Names alphabetically for predictable loading
       this.migrations.sort((a, b) => a.customerName.localeCompare(b.customerName));
 
-      this.filteredMigrations = [...this.migrations];
-
-      // Initialize table with migrations
-      migrationsTable.initTable(this.filteredMigrations);
-      migrationsTable.enableSorting();
+      // Apply customer search filter
+      const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
+      const searchTerm = customerSearch ? customerSearch.value : '';
+      this.filterMigrations(searchTerm);
 
       // Render the ingestions count
       this.renderIngestionsCount(Number.isNaN(total) ? 0 : total);
-
-      migrationsTable.initTable(this.filteredMigrations);
-      migrationsTable.enableSorting();
 
       // Mark data as loaded
       this.dataLoaded = true;
