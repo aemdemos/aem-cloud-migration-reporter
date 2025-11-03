@@ -19,22 +19,29 @@ class MigrationsTable {
     const tbody = this.migrationsContainer.querySelector('tbody');
     tbody.innerHTML = '';
 
-    const formatDate = (timestamp) => {
+    const formatDate = (timestamp, includeTime = false) => {
       if (!timestamp) return '-';
       const date = new Date(timestamp);
+
       const options = {
         year: 'numeric',
         month: 'short',
         day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false,
-        timeZone: 'UTC', // ensures UTC time
+        timeZone: 'UTC',
       };
-      return date.toLocaleString(undefined, options) + ' UTC';
-    };
 
+      if (includeTime) {
+        Object.assign(options, {
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false,
+        });
+      }
+
+      const formatted = date.toLocaleString(undefined, options);
+      return includeTime ? `${formatted} UTC` : formatted;
+    };
 
     migrations.forEach((migration) => {
       const tr = document.createElement('tr');
@@ -47,7 +54,7 @@ class MigrationsTable {
       const lastBpaCell = MigrationsTable.createCell(formatDate(migration.bpaReportUploaded), 'date');
       const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
       const failedCell = MigrationsTable.createCell(migration.failedIngestions ?? '-', 'numeric');
-      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion), 'date');
+      const lastCell = MigrationsTable.createCell(formatDate(migration.lastIngestion, true), 'date');
 
       tr.append(customerNameCell, lastBpaCell, totalCell, failedCell, lastCell);
       tbody.appendChild(tr);
