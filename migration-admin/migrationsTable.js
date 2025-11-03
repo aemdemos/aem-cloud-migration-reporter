@@ -116,7 +116,7 @@ class MigrationsTable {
           <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_BPA_UPLOAD}">Last BPA Upload</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.FIRST_INGESTION}">First Ingestion</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Last Ingestion</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Latest Ingestion</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_INGESTIONS}">Total Ingestions</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED_INGESTIONS}">Failed Ingestions</th>
         </tr>
