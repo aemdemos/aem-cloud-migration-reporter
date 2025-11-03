@@ -116,7 +116,7 @@ class MigrationsTable {
           <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_BPA_UPLOAD}">Last BPA Upload</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL}">Total Ingestions</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED}">Failed Ingestions</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Last Ingestion Started</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Last Ingestion</th>
         </tr>
       </thead>
     `;
