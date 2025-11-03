@@ -23,4 +23,4 @@ export const getCustomerMigrationInfoLast30Days = async () => {
   }
 };
 
-export default { getLast30DaysIngestions, getBpaReports };
+export default { getCustomerMigrationInfoLast30Days };

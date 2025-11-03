@@ -11,14 +11,11 @@
  */
 
 import {
-  getLast30DaysIngestions,
-  getBpaReports,
-  getCustomerMigrationInfoLast30Days
+  getCustomerMigrationInfoLast30Days,
 } from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import getUserProfile from './userProfile.js';
-import { summarizeIngestions } from './utils.js';
 
 const migrationsTable = new MigrationsTable();
 
