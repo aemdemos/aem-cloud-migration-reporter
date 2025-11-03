@@ -299,7 +299,7 @@ class MigrationsApp {
     const summary = document.createElement('div');
     summary.className = 'table-summary';
     summary.innerHTML = `
-      <span class="summary-label">Ingestions (Last 30 Days):</span>
+      <span class="summary-label">Total Ingestions:</span>
       <span class="summary-value">${Number.isFinite(total) ? total : 0}</span>
     `;
 
