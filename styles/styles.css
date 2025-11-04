@@ -299,7 +299,7 @@ button.secondary {
   width: 48px;
   height: 48px;
   animation: spin 1s linear infinite;
-  margin: auto;
+  margin: 60px auto !important;
 }
 
 @keyframes spin {
