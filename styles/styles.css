@@ -261,7 +261,6 @@ button.secondary {
 #customer-search {
   padding: 10px 38px 10px 16px;
   border: 1px solid #d1d9e6;
-  border-radius: 24px;
   background: #f8fafd;
   font-size: 1rem;
   transition: border 0.2s, box-shadow 0.2s;
