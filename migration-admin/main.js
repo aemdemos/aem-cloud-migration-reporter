@@ -191,12 +191,21 @@ class MigrationsApp {
     migrationsTable.enableSorting();
   }
 
-  computeTotalIngestions(migrations) {
-    return migrations.reduce((sum, m) => {
-      const val = Number(m.totalIngestions);
-      return sum + (Number.isFinite(val) ? val : 0);
-    }, 0);
+  computeIngestionStats(migrations) {
+    let total = 0;
+    let failed = 0;
+
+    migrations.forEach((m) => {
+      const t = Number(m.totalIngestions);
+      const f = Number(m.failedIngestions);
+      if (Number.isFinite(t)) total += t;
+      if (Number.isFinite(f)) failed += f;
+    });
+
+    const successful = total - failed;
+    return { total, successful, failed };
   }
+
 
 
   /**
@@ -257,7 +266,7 @@ class MigrationsApp {
       const searchTerm = customerSearch ? customerSearch.value : '';
       this.filterMigrations(searchTerm);
 
-      const totalIngestions = this.computeTotalIngestions(this.filteredMigrations);
+      const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
       this.renderIngestionsCount(totalIngestions);
 
       // Mark data as loaded
@@ -276,25 +285,30 @@ class MigrationsApp {
    * Render total ingestions count in the table-summary
    */
   // eslint-disable-next-line class-methods-use-this
-  renderIngestionsCount(total) {
+  renderIngestionsCount(stats) {
     const summaryWrapper = document.querySelector('.table-summary-wrapper');
     if (!summaryWrapper) return;
 
-    // Handle missing or invalid totals
-    const safeTotal = Number.isFinite(total) ? total : 0;
-
-    // Clear and recreate summary content
     summaryWrapper.innerHTML = '';
+
+    const { total, successful, failed } = stats;
 
     const summary = document.createElement('div');
     summary.className = 'table-summary';
     summary.innerHTML = `
-    <span class="summary-label">Total Ingestions:</span>
-    <span class="summary-value">${safeTotal.toLocaleString()}</span>
+    <span class="summary-label">Total:</span>
+    <span class="summary-value">${(total || 0).toLocaleString()}</span>
+    <span class="summary-separator">|</span>
+    <span class="summary-label success">Successful:</span>
+    <span class="summary-value success">${(successful || 0).toLocaleString()}</span>
+    <span class="summary-separator">|</span>
+    <span class="summary-label failed">Failed:</span>
+    <span class="summary-value failed">${(failed || 0).toLocaleString()}</span>
   `;
 
     summaryWrapper.appendChild(summary);
   }
+
 
 }
 
