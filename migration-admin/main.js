@@ -203,10 +203,10 @@ class MigrationsApp {
     });
 
     const successful = total - failed;
-    return { total, successful, failed };
+    const customers = migrations.length;
+
+    return { customers, total, successful, failed };
   }
-
-
 
   /**
    * Start the migration search and display process
@@ -291,12 +291,15 @@ class MigrationsApp {
 
     summaryWrapper.innerHTML = '';
 
-    const { total, successful, failed } = stats;
+    const { customers, total, successful, failed } = stats;
 
     const summary = document.createElement('div');
     summary.className = 'table-summary';
     summary.innerHTML = `
-    <span class="summary-label">Total Ingestions:</span>
+    <span class="summary-label">Customers:</span>
+    <span class="summary-value">${(customers || 0).toLocaleString()}</span>
+    <span class="summary-separator">|</span>
+    <span class="summary-label">Total:</span>
     <span class="summary-value">${(total || 0).toLocaleString()}</span>
     <span class="summary-separator">|</span>
     <span class="summary-label success">Successful:</span>
@@ -308,6 +311,7 @@ class MigrationsApp {
 
     summaryWrapper.appendChild(summary);
   }
+
 
 
 }
