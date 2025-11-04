@@ -227,7 +227,9 @@ class MigrationsApp {
       migrationsTable.enableSorting();
 
       // Fetch customer migration data
-      const dateRange = DateRange.LAST_MONTH;
+      const dateRangeSelect = document.getElementById('date-range-select');
+      const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_MONTH';
+      const dateRange = DateRange[selectedRange] || DateRange.LAST_30_DAYS;
       const resp = await getCustomerMigrationInfo(dateRange);
 
       let headers = null;
