@@ -216,6 +216,10 @@ class MigrationsApp {
       // Ensure user profile is available
       await this.ensureUserProfile();
 
+      // Show spinner, hide table content
+      if (spinner) spinner.classList.remove('hidden');
+      if (container) container.classList.add('hidden');
+
       // Show loading state
       migrationsTable.initTable([]);
       migrationsTable.enableSorting();
@@ -278,6 +282,10 @@ class MigrationsApp {
       if (container) {
         container.innerHTML = '<p class="error">Failed to load migration data.</p>';
       }
+    } finally {
+      // Hide spinner, show table again
+      if (spinner) spinner.classList.add('hidden');
+      if (container) container.classList.remove('hidden');
     }
   }
 
