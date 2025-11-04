@@ -11,11 +11,16 @@
  */
 
 import API_ENDPOINT from './config.js';
+import { DateRange } from './DateRange.js';
 
-export const getCustomerMigrationInfoLast30Days = async () => {
+export const getCustomerMigrationInfo = async (dateRange = DateRange.LAST_MONTH) => {
   try {
-    const response = await fetch(`${API_ENDPOINT}`);
+    const url = new URL(`${API_ENDPOINT}/customerMigrationInfo`);
+    url.searchParams.set('dateRange', dateRange);
+
+    const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
     return await response.json();
   } catch (e) {
     console.error('Error fetching customer migration info:', e);
@@ -23,4 +28,5 @@ export const getCustomerMigrationInfoLast30Days = async () => {
   }
 };
 
-export default { getCustomerMigrationInfoLast30Days };
+
+export default { getCustomerMigrationInfo };

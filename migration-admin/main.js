@@ -11,10 +11,11 @@
  */
 
 import {
-  getCustomerMigrationInfoLast30Days,
+  getCustomerMigrationInfo,
 } from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
+import { DateRange } from './DateRange.js';
 import getUserProfile from './userProfile.js';
 
 const migrationsTable = new MigrationsTable();
@@ -28,9 +29,7 @@ class MigrationsApp {
     this.userProfile = null;
     this.migrations = [];
     this.filteredMigrations = [];
-    this.ingestions = [];
     this.isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    this.dataLoaded = false;
     this.init();
   }
 
@@ -227,8 +226,9 @@ class MigrationsApp {
       migrationsTable.initTable([]);
       migrationsTable.enableSorting();
 
-      // Fetch ingestions
-      const resp = await getCustomerMigrationInfoLast30Days();
+      // Fetch customer migration data
+      const dateRange = DateRange.LAST_MONTH;
+      const resp = await getCustomerMigrationInfo(dateRange);
 
       let headers = null;
       let body;
@@ -276,8 +276,6 @@ class MigrationsApp {
       const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
       this.renderIngestionsCount(totalIngestions);
 
-      // Mark data as loaded
-      this.dataLoaded = true;
     } catch (error) {
       if (error.message === 'User not logged in') return;
 
