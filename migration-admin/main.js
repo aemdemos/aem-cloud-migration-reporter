@@ -191,6 +191,14 @@ class MigrationsApp {
     migrationsTable.enableSorting();
   }
 
+  computeTotalIngestions(migrations) {
+    return migrations.reduce((sum, m) => {
+      const val = Number(m.totalIngestions);
+      return sum + (Number.isFinite(val) ? val : 0);
+    }, 0);
+  }
+
+
   /**
    * Start the migration search and display process
    */
@@ -249,8 +257,8 @@ class MigrationsApp {
       const searchTerm = customerSearch ? customerSearch.value : '';
       this.filterMigrations(searchTerm);
 
-      // Render the ingestions count
-      this.renderIngestionsCount(Number.isNaN(total) ? 0 : total);
+      const totalIngestions = this.computeTotalIngestions(sortedMigrations);
+      this.renderIngestionsCount(totalIngestions);
 
       // Mark data as loaded
       this.dataLoaded = true;
@@ -269,22 +277,25 @@ class MigrationsApp {
    */
   // eslint-disable-next-line class-methods-use-this
   renderIngestionsCount(total) {
-    // Find the table-summary-wrapper
     const summaryWrapper = document.querySelector('.table-summary-wrapper');
     if (!summaryWrapper) return;
 
-    // Clear and create the summary content
+    // Handle missing or invalid totals
+    const safeTotal = Number.isFinite(total) ? total : 0;
+
+    // Clear and recreate summary content
     summaryWrapper.innerHTML = '';
 
     const summary = document.createElement('div');
     summary.className = 'table-summary';
     summary.innerHTML = `
-      <span class="summary-label">Total Ingestions:</span>
-      <span class="summary-value">${Number.isFinite(total) ? total : 0}</span>
-    `;
+    <span class="summary-label">Total Ingestions:</span>
+    <span class="summary-value">${safeTotal.toLocaleString()}</span>
+  `;
 
     summaryWrapper.appendChild(summary);
   }
+
 }
 
 // Initialize the application when DOM is ready
