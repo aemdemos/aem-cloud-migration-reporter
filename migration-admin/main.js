@@ -296,7 +296,7 @@ class MigrationsApp {
     const summary = document.createElement('div');
     summary.className = 'table-summary';
     summary.innerHTML = `
-    <span class="summary-label">Total:</span>
+    <span class="summary-label">Total Ingestions:</span>
     <span class="summary-value">${(total || 0).toLocaleString()}</span>
     <span class="summary-separator">|</span>
     <span class="summary-label success">Successful:</span>
