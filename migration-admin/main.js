@@ -212,6 +212,9 @@ class MigrationsApp {
    * Start the migration search and display process
    */
   async startMigrationSearch() {
+    const spinner = document.getElementById('loading-spinner');
+    const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
+
     try {
       // Ensure user profile is available
       await this.ensureUserProfile();
