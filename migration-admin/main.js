@@ -258,7 +258,7 @@ class MigrationsApp {
       this.filterMigrations(searchTerm);
 
       const totalIngestions = this.computeTotalIngestions(this.filteredMigrations);
-      //this.renderIngestionsCount(totalIngestions);
+      this.renderIngestionsCount(totalIngestions);
 
       // Mark data as loaded
       this.dataLoaded = true;
