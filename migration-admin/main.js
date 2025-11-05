@@ -17,7 +17,7 @@ import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import { DateRange } from './DateRange.js';
 import getUserProfile from './userProfile.js';
-import { createLineGraph } from './lineGraph.js';
+import { createLineGraph, createTotalIngestionsGraph } from './lineGraph.js';
 
 const migrationsTable = new MigrationsTable();
 
@@ -269,7 +269,7 @@ class MigrationsApp {
       this.renderIngestionsCount(totalIngestions);
 
       // Render line graph with all migrations (not filtered by customer search)
-      this.renderLineGraph(this.migrations);
+      this.renderLineGraph(this.migrations, selectedRange);
 
       // Mark data as loaded
       this.dataLoaded = true;
@@ -324,13 +324,19 @@ class MigrationsApp {
    * Render line graph showing last ingestions over time
    */
   // eslint-disable-next-line class-methods-use-this
-  renderLineGraph(migrations) {
+  renderLineGraph(migrations, dateRange) {
     const graphWrapper = document.getElementById('line-graph-wrapper');
     if (!graphWrapper) return;
 
     graphWrapper.innerHTML = '';
-    const lineGraph = createLineGraph(migrations);
-    graphWrapper.appendChild(lineGraph);
+
+    // Create customers graph
+    const customersGraph = createLineGraph(migrations, dateRange);
+    graphWrapper.appendChild(customersGraph);
+
+    // Create total ingestions graph
+    const ingestionsGraph = createTotalIngestionsGraph(migrations, dateRange);
+    graphWrapper.appendChild(ingestionsGraph);
   }
 }
 

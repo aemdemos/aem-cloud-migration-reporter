@@ -231,9 +231,12 @@
 
 /* Line Graph Wrapper */
 #line-graph-wrapper {
-    max-width: 1200px;
+    max-width: 1600px;
     margin: 0 auto 32px;
     padding: 0 24px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
 }
 
 /* Line Graph Styles */
@@ -243,10 +246,12 @@
     border-radius: 12px;
     padding: 24px;
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+    flex: 1;
+    min-width: 400px;
 }
 
 .line-graph-title {
-    margin: 0 0 20px 0;
+    margin: 0 0 20px;
     font-size: 1.3rem;
     font-weight: 600;
     color: #1f2937;
@@ -276,11 +281,6 @@
 
 .data-point {
     cursor: pointer;
-    transition: r 0.2s ease;
-}
-
-.data-point:hover {
-    r: 6;
 }
 
 .graph-stats {
