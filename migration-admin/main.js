@@ -233,7 +233,14 @@ class MigrationsApp {
       // Fetch customer migration data
       const dateRangeSelect = document.getElementById('date-range-select');
       const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_MONTH';
-      const dateRange = DateRange[selectedRange] || DateRange.LAST_30_DAYS;
+      const dateRange = DateRange[selectedRange] || DateRange.LAST_MONTH;
+
+      // Update the table header
+      const totalIngestionsHeader = document.getElementById('total-ingestions-header');
+      if (totalIngestionsHeader) {
+        totalIngestionsHeader.textContent = `Total Ingestions (${DateRange[selectedRange].label})`;
+      }
+
       const resp = await getCustomerMigrationInfo(dateRange);
 
       let body;
@@ -271,8 +278,6 @@ class MigrationsApp {
       // Render line graph with all migrations (not filtered by customer search)
       this.renderLineGraph(this.migrations);
 
-      // Mark data as loaded
-      this.dataLoaded = true;
     } catch (error) {
       if (error.message === 'User not logged in') return;
 
