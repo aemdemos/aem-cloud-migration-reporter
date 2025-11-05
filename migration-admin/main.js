@@ -330,13 +330,13 @@ class MigrationsApp {
 
     graphWrapper.innerHTML = '';
 
-    // Create customers graph
-    const customersGraph = createLineGraph(migrations, dateRange);
-    graphWrapper.appendChild(customersGraph);
-
     // Create total ingestions graph
     const ingestionsGraph = createTotalIngestionsGraph(migrations, dateRange);
     graphWrapper.appendChild(ingestionsGraph);
+
+    // Create customers graph
+    const customersGraph = createLineGraph(migrations, dateRange);
+    graphWrapper.appendChild(customersGraph);
   }
 }
 
