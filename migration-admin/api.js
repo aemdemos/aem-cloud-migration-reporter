@@ -18,6 +18,7 @@ export const getCustomerMigrationInfoLast30Days = async () => {
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     return await response.json();
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error('Error fetching customer migration info:', e);
     return [];
   }

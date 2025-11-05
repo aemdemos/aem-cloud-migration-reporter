@@ -11,13 +11,11 @@
  */
 /* eslint-disable no-underscore-dangle */
 
-export const sortTable = (data, key, direction = 'asc') => {
+const sortTable = (data, key, direction = 'asc') => {
   const dir = direction === 'asc' ? 1 : -1;
 
-  const getValue = (obj, path) => {
-    // Support nested keys like 'lastIngestion'
-    return path.split('.').reduce((o, k) => (o ? o[k] : null), obj);
-  };
+  // Support nested keys like 'lastIngestion'
+  const getValue = (obj, path) => path.split('.').reduce((o, k) => (o ? o[k] : null), obj);
 
   return [...data].sort((a, b) => {
     const valA = getValue(a, key);
@@ -34,10 +32,11 @@ export const sortTable = (data, key, direction = 'asc') => {
     // Dates
     const dateA = new Date(valA);
     const dateB = new Date(valB);
-    if (!isNaN(dateA) && !isNaN(dateB)) return (dateA - dateB) * dir;
+    if (!Number.isNaN(dateA) && !Number.isNaN(dateB)) return (dateA - dateB) * dir;
 
     // Strings
     return String(valA).localeCompare(String(valB)) * dir;
   });
 };
 
+export default sortTable;

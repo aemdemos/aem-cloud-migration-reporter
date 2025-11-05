@@ -1,4 +1,4 @@
-import { sortTable } from './utils.js';
+import sortTable from './utils.js';
 import { TABLE_CONFIG, CSS_CLASSES, ELEMENT_IDS } from './constants.js';
 
 class MigrationsTable {
@@ -81,7 +81,7 @@ class MigrationsTable {
         // Remove sort classes from all headers
         headers.forEach((h) => h.classList.remove(
           CSS_CLASSES.TABLE.SORTED_ASC,
-          CSS_CLASSES.TABLE.SORTED_DESC
+          CSS_CLASSES.TABLE.SORTED_DESC,
         ));
 
         // Sort data
@@ -91,7 +91,7 @@ class MigrationsTable {
         header.classList.add(
           newDirection === 'asc'
             ? CSS_CLASSES.TABLE.SORTED_ASC
-            : CSS_CLASSES.TABLE.SORTED_DESC
+            : CSS_CLASSES.TABLE.SORTED_DESC,
         );
 
         this.renderTable(sortedData);
@@ -129,9 +129,13 @@ class MigrationsTable {
     this.migrationsContainer.appendChild(table);
 
     // Initial sort
-    const sortedMigrations = sortTable(migrations, TABLE_CONFIG.DEFAULT_SORT_COLUMN, this.sortDirection);
+    const sortedMigrations = sortTable(
+      migrations,
+      TABLE_CONFIG.DEFAULT_SORT_COLUMN,
+      this.sortDirection,
+    );
     document.querySelector(`th[data-sort="${TABLE_CONFIG.DEFAULT_SORT_COLUMN}"]`)
-    .classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
+      .classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
 
     this.renderTable(sortedMigrations);
   }

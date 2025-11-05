@@ -207,7 +207,9 @@ class MigrationsApp {
     const successful = total - failed;
     const customers = migrations.length;
 
-    return { customers, total, successful, failed };
+    return {
+      customers, total, successful, failed,
+    };
   }
 
   /**
@@ -232,11 +234,9 @@ class MigrationsApp {
       // Fetch ingestions
       const resp = await getCustomerMigrationInfoLast30Days();
 
-      let headers = null;
       let body;
 
       if (typeof Response !== 'undefined' && resp instanceof Response) {
-        headers = resp.headers;
         try {
           body = await resp.json();
         } catch (e) {
@@ -254,18 +254,6 @@ class MigrationsApp {
       } else {
         this.migrations = [];
       }
-
-      // Extract total from header
-      let totalHeader = null;
-      if (headers) {
-        if (typeof headers.get === 'function') {
-          totalHeader = headers.get('X-Ingestions-Count');
-        } else {
-          const key = Object.keys(headers).find((k) => k.toLowerCase() === 'x-ingestions-count');
-          totalHeader = key ? headers[key] : undefined;
-        }
-      }
-      const total = totalHeader ? parseInt(totalHeader, 10) : this.migrations.length;
 
       // Sort customer Names alphabetically for predictable loading
       this.migrations.sort((a, b) => a.customerName.localeCompare(b.customerName));
@@ -286,9 +274,9 @@ class MigrationsApp {
     } catch (error) {
       if (error.message === 'User not logged in') return;
 
-      const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
-      if (container) {
-        container.innerHTML = '<p class="error">Failed to load migration data.</p>';
+      const errorContainer = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
+      if (errorContainer) {
+        errorContainer.innerHTML = '<p class="error">Failed to load migration data.</p>';
       }
     } finally {
       // Hide spinner, show table again
@@ -307,7 +295,9 @@ class MigrationsApp {
 
     summaryWrapper.innerHTML = '';
 
-    const { customers, total, successful, failed } = stats;
+    const {
+      customers, total, successful, failed,
+    } = stats;
 
     const summary = document.createElement('div');
     summary.className = 'table-summary';
@@ -340,9 +330,6 @@ class MigrationsApp {
     const lineGraph = createLineGraph(migrations);
     graphWrapper.appendChild(lineGraph);
   }
-
-
-
 }
 
 // Initialize the application when DOM is ready
