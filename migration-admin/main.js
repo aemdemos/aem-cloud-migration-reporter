@@ -11,10 +11,11 @@
  */
 
 import {
-  getCustomerMigrationInfoLast30Days,
+  getCustomerMigrationInfo,
 } from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
+import { DateRange } from './DateRange.js';
 import getUserProfile from './userProfile.js';
 import { createLineGraph } from './lineGraph.js';
 
@@ -29,9 +30,7 @@ class MigrationsApp {
     this.userProfile = null;
     this.migrations = [];
     this.filteredMigrations = [];
-    this.ingestions = [];
     this.isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-    this.dataLoaded = false;
     this.init();
   }
 
@@ -231,8 +230,11 @@ class MigrationsApp {
       migrationsTable.initTable([]);
       migrationsTable.enableSorting();
 
-      // Fetch ingestions
-      const resp = await getCustomerMigrationInfoLast30Days();
+      // Fetch customer migration data
+      const dateRangeSelect = document.getElementById('date-range-select');
+      const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_MONTH';
+      const dateRange = DateRange[selectedRange] || DateRange.LAST_30_DAYS;
+      const resp = await getCustomerMigrationInfo(dateRange);
 
       let body;
 
