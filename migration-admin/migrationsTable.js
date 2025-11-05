@@ -119,7 +119,7 @@ class MigrationsTable {
           <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_PROJECTS}">Total Projects</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.FIRST_INGESTION}">First Ingestion</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Latest Ingestion</th>
-          <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_INGESTIONS}">Total Ingestions</th>
+          <th id="total-ingestions-header" data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_INGESTIONS}">Total Ingestions</th>
           <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED_INGESTIONS}">Failed Ingestions</th>
         </tr>
       </thead>
