@@ -11,37 +11,38 @@
  */
 
 /**
- * Creates a line graph showing the distribution of ingestions in the Last 30 days.
+ * Creates a line graph showing total ingestions by month.
  */
 // eslint-disable-next-line import/prefer-default-export
 export function createLineGraph(migrations) {
   const container = document.createElement('div');
   container.className = 'line-graph-container';
 
-  // Filter valid last ingestion dates
-  const validIngestions = migrations
-    .map((m) => m.lastIngestion)
-    .filter((t) => t && t > 0)
-    .sort((a, b) => a - b);
+  // Filter migrations with valid last ingestion dates
+  const validMigrations = migrations.filter((m) => m.lastIngestion && m.lastIngestion > 0);
 
-  if (validIngestions.length === 0) {
+  if (validMigrations.length === 0) {
     container.innerHTML = '<p class="no-data">No ingestion data available</p>';
     return container;
   }
 
-  // Group ingestions by date
-  const dateGroups = new Map();
-  validIngestions.forEach((timestamp) => {
-    const date = new Date(timestamp);
-    const dateKey = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
-    dateGroups.set(dateKey, (dateGroups.get(dateKey) || 0) + 1);
+  // Group ingestions by month and sum total ingestions
+  const monthGroups = new Map();
+  validMigrations.forEach((migration) => {
+    const date = new Date(migration.lastIngestion);
+    // Create month key (YYYY-MM format)
+    const monthKey = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
+
+    const totalIngestions = Number(migration.totalIngestions) || 0;
+    monthGroups.set(monthKey, (monthGroups.get(monthKey) || 0) + totalIngestions);
   });
 
-  // Convert to array and sort by date
-  const dataPoints = Array.from(dateGroups.entries())
-    .map(([date, count]) => ({
-      date: new Date(`${date}T00:00:00Z`),
-      count,
+  // Convert to array and sort by month
+  const dataPoints = Array.from(monthGroups.entries())
+    .map(([monthKey, total]) => ({
+      date: new Date(`${monthKey}-01T00:00:00Z`),
+      count: total,
+      monthKey,
     }))
     .sort((a, b) => a.date - b.date);
 
@@ -67,7 +68,7 @@ export function createLineGraph(migrations) {
   // Create title
   const title = document.createElement('h3');
   title.className = 'line-graph-title';
-  title.textContent = 'Ingestions in the Last 30 Days';
+  title.textContent = 'Total Ingestions by Month';
 
   // Create grid lines
   const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
@@ -155,8 +156,8 @@ export function createLineGraph(migrations) {
     circle.setAttribute('class', 'data-point');
 
     // Tooltip
-    const dateStr = point.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    circle.innerHTML = `<title>${dateStr}: ${point.count} ingestion${point.count !== 1 ? 's' : ''}</title>`;
+    const dateStr = point.date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    circle.innerHTML = `<title>${dateStr}: ${point.count.toLocaleString()} total ingestions</title>`;
 
     svg.appendChild(circle);
   });
@@ -181,24 +182,26 @@ export function createLineGraph(migrations) {
   }
   svg.appendChild(yAxisGroup);
 
-  // X-axis labels (show first, middle, and last dates)
+  // X-axis labels (show all months or sample based on count)
   const xAxisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   xAxisGroup.setAttribute('class', 'x-axis');
 
-  const xLabels = [0, Math.floor(dataPoints.length / 2), dataPoints.length - 1];
-  xLabels.forEach((index) => {
-    const point = dataPoints[index];
-    // eslint-disable-next-line no-mixed-operators
-    const x = padding.left + (point.date.getTime() - minDate) / (maxDate - minDate) * graphWidth;
-    const dateStr = point.date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  // Show all months if <= 12, otherwise show every other month
+  const step = dataPoints.length <= 12 ? 1 : Math.ceil(dataPoints.length / 12);
+  dataPoints.forEach((point, index) => {
+    if (index % step === 0 || index === dataPoints.length - 1) {
+      // eslint-disable-next-line no-mixed-operators
+      const x = padding.left + (point.date.getTime() - minDate) / (maxDate - minDate) * graphWidth;
+      const dateStr = point.date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
 
-    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', x);
-    text.setAttribute('y', height - padding.bottom + 20);
-    text.setAttribute('text-anchor', 'middle');
-    text.setAttribute('class', 'axis-label');
-    text.textContent = dateStr;
-    xAxisGroup.appendChild(text);
+      const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      text.setAttribute('x', x);
+      text.setAttribute('y', height - padding.bottom + 20);
+      text.setAttribute('text-anchor', 'middle');
+      text.setAttribute('class', 'axis-label');
+      text.textContent = dateStr;
+      xAxisGroup.appendChild(text);
+    }
   });
   svg.appendChild(xAxisGroup);
 
@@ -209,7 +212,7 @@ export function createLineGraph(migrations) {
   yAxisLabel.setAttribute('transform', 'rotate(-90)');
   yAxisLabel.setAttribute('text-anchor', 'middle');
   yAxisLabel.setAttribute('class', 'axis-title');
-  yAxisLabel.textContent = 'Number of Ingestions';
+  yAxisLabel.textContent = 'Total Ingestions';
   svg.appendChild(yAxisLabel);
 
   // Assemble container
@@ -219,9 +222,13 @@ export function createLineGraph(migrations) {
   // Add summary stats
   const stats = document.createElement('div');
   stats.className = 'graph-stats';
+  const totalAllMonths = dataPoints.reduce((sum, point) => sum + point.count, 0);
+  const peakMonth = dataPoints.reduce((max, point) => (point.count > max.count ? point : max));
+  const peakMonthName = peakMonth.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+
   stats.innerHTML = `
-    <span><strong>Total Ingestions:</strong> ${validIngestions.length}</span>
-    <span><strong>Peak Day:</strong> ${Math.max(...dataPoints.map((d) => d.count))} ingestions</span>
+    <span><strong>Total Across All Months:</strong> ${totalAllMonths.toLocaleString()} ingestions</span>
+    <span><strong>Peak Month:</strong> ${peakMonthName} (${peakMonth.count.toLocaleString()} ingestions)</span>
   `;
   container.appendChild(stats);
 
