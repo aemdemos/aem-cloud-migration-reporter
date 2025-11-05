@@ -192,7 +192,7 @@ export function createLineGraph(migrations) {
     if (index % step === 0 || index === dataPoints.length - 1) {
       // eslint-disable-next-line no-mixed-operators
       const x = padding.left + (point.date.getTime() - minDate) / (maxDate - minDate) * graphWidth;
-      const dateStr = point.date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+      const dateStr = point.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
 
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
       text.setAttribute('x', x);
@@ -218,19 +218,6 @@ export function createLineGraph(migrations) {
   // Assemble container
   container.appendChild(title);
   container.appendChild(svg);
-
-  // Add summary stats
-  const stats = document.createElement('div');
-  stats.className = 'graph-stats';
-  const totalAllMonths = dataPoints.reduce((sum, point) => sum + point.count, 0);
-  const peakMonth = dataPoints.reduce((max, point) => (point.count > max.count ? point : max));
-  const peakMonthName = peakMonth.date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
-
-  stats.innerHTML = `
-    <span><strong>Total Across All Months:</strong> ${totalAllMonths.toLocaleString()} ingestions</span>
-    <span><strong>Peak Month:</strong> ${peakMonthName} (${peakMonth.count.toLocaleString()} ingestions)</span>
-  `;
-  container.appendChild(stats);
 
   return container;
 }
