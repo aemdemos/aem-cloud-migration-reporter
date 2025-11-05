@@ -235,12 +235,6 @@ class MigrationsApp {
       const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_MONTH';
       const dateRange = DateRange[selectedRange] || DateRange.LAST_MONTH;
 
-      // Update the table header
-      const totalIngestionsHeader = document.getElementById('total-ingestions-header');
-      if (totalIngestionsHeader) {
-        totalIngestionsHeader.textContent = `Total Ingestions (${DateRange[selectedRange].label})`;
-      }
-
       const resp = await getCustomerMigrationInfo(dateRange);
 
       let body;
@@ -271,6 +265,12 @@ class MigrationsApp {
       const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
       const searchTerm = customerSearch ? customerSearch.value : '';
       this.filterMigrations(searchTerm);
+
+      // Update the table header
+      const totalIngestionsHeader = document.getElementById('total-ingestions-header');
+      if (totalIngestionsHeader) {
+        totalIngestionsHeader.textContent = `Total Ingestions (${DateRange[selectedRange].label})`;
+      }
 
       const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
       this.renderIngestionsCount(totalIngestions);
