@@ -222,3 +222,80 @@
     background: none;
 }
 
+/* Line Graph Wrapper */
+#line-graph-wrapper {
+    max-width: 1200px;
+    margin: 0 auto 32px;
+    padding: 0 24px;
+}
+
+/* Line Graph Styles */
+.line-graph-container {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.line-graph-title {
+    margin: 0 0 20px 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #1f2937;
+    text-align: center;
+}
+
+.line-graph-svg {
+    width: 100%;
+    height: auto;
+    max-width: 800px;
+    margin: 0 auto;
+    display: block;
+}
+
+.axis-label {
+    font-size: 12px;
+    fill: #6b7280;
+    font-family: Inter, 'Adobe Clean', 'Segoe UI', Arial, sans-serif;
+}
+
+.axis-title {
+    font-size: 13px;
+    fill: #374151;
+    font-weight: 600;
+    font-family: Inter, 'Adobe Clean', 'Segoe UI', Arial, sans-serif;
+}
+
+.data-point {
+    cursor: pointer;
+    transition: r 0.2s ease;
+}
+
+.data-point:hover {
+    r: 6;
+}
+
+.graph-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+    color: #4b5563;
+}
+
+.graph-stats strong {
+    color: #1f2937;
+    font-weight: 600;
+}
+
+.no-data {
+    text-align: center;
+    padding: 40px;
+    color: #6b7280;
+    font-size: 1rem;
+}
+

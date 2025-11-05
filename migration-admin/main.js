@@ -16,6 +16,7 @@ import {
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import getUserProfile from './userProfile.js';
+import { createLineGraph } from './lineGraph.js';
 
 const migrationsTable = new MigrationsTable();
 
@@ -191,6 +192,7 @@ class MigrationsApp {
     migrationsTable.enableSorting();
   }
 
+  // eslint-disable-next-line class-methods-use-this
   computeIngestionStats(migrations) {
     let total = 0;
     let failed = 0;
@@ -276,6 +278,9 @@ class MigrationsApp {
       const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
       this.renderIngestionsCount(totalIngestions);
 
+      // Render line graph
+      this.renderLineGraph(this.filteredMigrations);
+
       // Mark data as loaded
       this.dataLoaded = true;
     } catch (error) {
@@ -321,6 +326,19 @@ class MigrationsApp {
   `;
 
     summaryWrapper.appendChild(summary);
+  }
+
+  /**
+   * Render line graph showing last ingestions over time
+   */
+  // eslint-disable-next-line class-methods-use-this
+  renderLineGraph(migrations) {
+    const graphWrapper = document.getElementById('line-graph-wrapper');
+    if (!graphWrapper) return;
+
+    graphWrapper.innerHTML = '';
+    const lineGraph = createLineGraph(migrations);
+    graphWrapper.appendChild(lineGraph);
   }
 
 
