@@ -23,10 +23,8 @@ export const getCustomerMigrationInfo = async (dateRange = DateRange.LAST_MONTH)
 
     return await response.json();
   } catch (e) {
-    console.error('Error fetching customer migration info:', e);
     return [];
   }
 };
-
 
 export default { getCustomerMigrationInfo };

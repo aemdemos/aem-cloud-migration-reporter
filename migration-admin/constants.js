@@ -21,7 +21,7 @@ export const TABLE_CONFIG = {
     TOTAL_INGESTIONS: 'totalIngestions',
     FAILED_INGESTIONS: 'failedIngestions',
     LAST_INGESTION: 'lastIngestion',
-    TOTAL_PROJECTS: 'totalProjects'
+    TOTAL_PROJECTS: 'totalProjects',
   },
 };
 
