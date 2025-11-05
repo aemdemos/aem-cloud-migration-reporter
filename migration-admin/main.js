@@ -268,8 +268,8 @@ class MigrationsApp {
       const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
       this.renderIngestionsCount(totalIngestions);
 
-      // Render line graph
-      this.renderLineGraph(this.filteredMigrations);
+      // Render line graph with all migrations (not filtered by customer search)
+      this.renderLineGraph(this.migrations);
 
       // Mark data as loaded
       this.dataLoaded = true;
