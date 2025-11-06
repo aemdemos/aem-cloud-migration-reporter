@@ -306,12 +306,6 @@ export function createTotalIngestionsGraph(migrations, dateRange = 'LAST_1_MONTH
     case 'LAST_3_MONTHS':
       startDate.setMonth(startDate.getMonth() - 3);
       break;
-    case 'LAST_6_MONTHS':
-      startDate.setMonth(startDate.getMonth() - 6);
-      break;
-    case 'LAST_YEAR':
-      startDate.setFullYear(startDate.getFullYear() - 1);
-      break;
     default:
       startDate.setMonth(startDate.getMonth() - 1);
   }
