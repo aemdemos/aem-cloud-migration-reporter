@@ -151,22 +151,11 @@ class MigrationsApp {
    */
   setupEventListeners() {
     const searchButton = document.getElementById('search-button');
-    const dateRangeSelect = document.getElementById('date-range-select');
     const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
 
     // Handle search button click - always load fresh data
     if (searchButton) {
       searchButton.addEventListener('click', () => {
-        this.startMigrationSearch().catch((error) => {
-          // eslint-disable-next-line no-console
-          console.error('Unhandled error in startMigrationSearch:', error);
-        });
-      });
-    }
-
-    // Handle date range change - automatically fetch new data
-    if (dateRangeSelect) {
-      dateRangeSelect.addEventListener('change', () => {
         this.startMigrationSearch().catch((error) => {
           // eslint-disable-next-line no-console
           console.error('Unhandled error in startMigrationSearch:', error);
