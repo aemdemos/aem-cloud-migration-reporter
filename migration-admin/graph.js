@@ -63,10 +63,10 @@ function createBarGraph(config) {
     // eslint-disable-next-line no-mixed-operators
     const y = padding.top + (graphHeight * i / ySteps);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    line.setAttribute('x1', padding.left);
-    line.setAttribute('y1', y);
-    line.setAttribute('x2', padding.left + graphWidth);
-    line.setAttribute('y2', y);
+    line.setAttribute('x1', String(padding.left));
+    line.setAttribute('y1', String(y));
+    line.setAttribute('x2', String(padding.left + graphWidth));
+    line.setAttribute('y2', String(y));
     line.setAttribute('stroke', '#e5e7eb');
     line.setAttribute('stroke-width', '1');
     gridGroup.appendChild(line);
@@ -86,10 +86,10 @@ function createBarGraph(config) {
     const y = padding.top + graphHeight - barHeight;
 
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-    rect.setAttribute('x', x);
-    rect.setAttribute('y', y);
-    rect.setAttribute('width', barWidth);
-    rect.setAttribute('height', barHeight);
+    rect.setAttribute('x', String(x));
+    rect.setAttribute('y', String(y));
+    rect.setAttribute('width', String(barWidth));
+    rect.setAttribute('height', String(barHeight));
     rect.setAttribute('fill', barColor);
     rect.setAttribute('opacity', '0.8');
     rect.setAttribute('rx', '4');
@@ -111,11 +111,11 @@ function createBarGraph(config) {
     const y = padding.top + (graphHeight * i / ySteps);
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', padding.left - 10);
-    text.setAttribute('y', y + 5);
+    text.setAttribute('x', String(padding.left - 10));
+    text.setAttribute('y', String(y + 5));
     text.setAttribute('text-anchor', 'end');
     text.setAttribute('class', 'axis-label');
-    text.textContent = value;
+    text.textContent = String(value);
     yAxisGroup.appendChild(text);
   }
   svg.appendChild(yAxisGroup);
@@ -130,8 +130,8 @@ function createBarGraph(config) {
       + (graphWidth / dayRanges.length / 2);
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    text.setAttribute('x', x);
-    text.setAttribute('y', height - padding.bottom + 20);
+    text.setAttribute('x', String(x));
+    text.setAttribute('y', String(height - padding.bottom + 20));
     text.setAttribute('text-anchor', 'middle');
     text.setAttribute('class', 'axis-label');
     text.textContent = range;
@@ -142,8 +142,8 @@ function createBarGraph(config) {
 
   // Y-axis label
   const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  yAxisLabel.setAttribute('x', -height / 2);
-  yAxisLabel.setAttribute('y', 20);
+  yAxisLabel.setAttribute('x', String(-height / 2));
+  yAxisLabel.setAttribute('y', String(20));
   yAxisLabel.setAttribute('transform', 'rotate(-90)');
   yAxisLabel.setAttribute('text-anchor', 'middle');
   yAxisLabel.setAttribute('class', 'axis-title');
@@ -152,8 +152,8 @@ function createBarGraph(config) {
 
   // X-axis label
   const xAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  xAxisLabel.setAttribute('x', padding.left + graphWidth / 2);
-  xAxisLabel.setAttribute('y', height - 5);
+  xAxisLabel.setAttribute('x', String(padding.left + graphWidth / 2));
+  xAxisLabel.setAttribute('y', String(height - 5));
   xAxisLabel.setAttribute('text-anchor', 'middle');
   xAxisLabel.setAttribute('class', 'axis-title');
   xAxisLabel.textContent = 'Days';
@@ -196,13 +196,13 @@ export function createCustomersGraph(migrations) {
         .sort((a, b) => b - a);
 
       const totalCount = dataPointsArray.length > 0 ? dataPointsArray[0] : 0;
-      const maxCount = totalCount;
+      const maxCount = Number(totalCount);
 
       // Distribute count across day ranges (sample data)
       const distributedData = dayRanges.map((range) => ({
         range,
-        count: totalCount / dayRanges.length,
-        tooltip: `${range} days: ${(totalCount / dayRanges.length).toLocaleString()} customers`,
+        count: Number(totalCount / dayRanges.length),
+        tooltip: `${range} days: ${Math.round(totalCount / dayRanges.length).toLocaleString()} customers`,
       }));
 
       return { dataPoints: distributedData, maxCount };
@@ -244,13 +244,13 @@ export function createIngestionsGraph(migrations) {
         .sort((a, b) => b - a);
 
       const totalCount = dataPointsArray.length > 0 ? dataPointsArray[0] : 0;
-      const maxCount = totalCount;
+      const maxCount = Number(totalCount);
 
       // Distribute count across day ranges (sample data)
       const distributedData = dayRanges.map((range) => ({
         range,
-        count: totalCount / dayRanges.length,
-        tooltip: `${range} days: ${(totalCount / dayRanges.length).toLocaleString()} total ingestions`,
+        count: Number(totalCount / dayRanges.length),
+        tooltip: `${range} days: ${Math.round(totalCount / dayRanges.length).toLocaleString()} total ingestions`,
       }));
 
       return { dataPoints: distributedData, maxCount };
