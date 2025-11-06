@@ -155,6 +155,11 @@
     transition: background-color 0.2s ease;
 }
 
+.table-summary-wrapper {
+    padding: 20px;
+    width: 475px;
+}
+
 /* ===============================
    Line Graph
    =============================== */
