@@ -13,7 +13,7 @@
 /**
  * Creates a line graph showing customers running migrations.
  */
-export function createLineGraph(migrations, dateRange = 'LAST_MONTH') {
+export function createLineGraph(migrations, dateRange = 'LAST_1_MONTH') {
   const container = document.createElement('div');
   container.className = 'line-graph-container';
 
@@ -29,7 +29,7 @@ export function createLineGraph(migrations, dateRange = 'LAST_MONTH') {
   const startDate = new Date(endDate);
 
   switch (dateRange) {
-    case 'LAST_MONTH':
+    case 'LAST_1_MONTH':
       startDate.setMonth(startDate.getMonth() - 1);
       break;
     case 'LAST_2_MONTHS':
@@ -284,7 +284,7 @@ export function createLineGraph(migrations, dateRange = 'LAST_MONTH') {
 /**
  * Creates a line graph showing total ingestions over time.
  */
-export function createTotalIngestionsGraph(migrations, dateRange = 'LAST_MONTH') {
+export function createTotalIngestionsGraph(migrations, dateRange = 'LAST_1_MONTH') {
   const container = document.createElement('div');
   container.className = 'line-graph-container';
   // Format date range for display
@@ -297,7 +297,7 @@ export function createTotalIngestionsGraph(migrations, dateRange = 'LAST_MONTH')
   const endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const startDate = new Date(endDate);
   switch (dateRange) {
-    case 'LAST_MONTH':
+    case 'LAST_1_MONTH':
       startDate.setMonth(startDate.getMonth() - 1);
       break;
     case 'LAST_2_MONTHS':
@@ -305,12 +305,6 @@ export function createTotalIngestionsGraph(migrations, dateRange = 'LAST_MONTH')
       break;
     case 'LAST_3_MONTHS':
       startDate.setMonth(startDate.getMonth() - 3);
-      break;
-    case 'LAST_6_MONTHS':
-      startDate.setMonth(startDate.getMonth() - 6);
-      break;
-    case 'LAST_YEAR':
-      startDate.setFullYear(startDate.getFullYear() - 1);
       break;
     default:
       startDate.setMonth(startDate.getMonth() - 1);
