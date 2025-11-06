@@ -95,8 +95,11 @@
 }
 
 .migration-admin .date-range-wrapper select {
-    padding: 6px 10px;
     font-size: 14px;
+    padding: 10px 10px;
+    font-size: 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
 }
 
 /* ===============================
