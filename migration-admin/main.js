@@ -271,7 +271,7 @@ class MigrationsApp {
 
       // Fetch customer migration data
       const dateRangeSelect = document.getElementById('date-range-select');
-      const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_MONTH';
+      const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_1_MONTH';
 
       const resp = await getCustomerMigrationInfo(selectedRange);
 
