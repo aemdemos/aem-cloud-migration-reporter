@@ -140,7 +140,7 @@ class MigrationsApp {
       if (container) {
         container.innerHTML = this.isLocalhost
           ? '<p class="error">You are not logged in. Please add ?email=you@adobe.com&name=YourFullName to the URL</p>'
-          : '<p class="error">You are not logged in. Please log in via AEM Sidekick to view migration data.</p>';
+          : '<p class="error">You are not logged in. Please log in via <a href="https://www.aem.live/docs/sidekick" target="_blank" rel="noopener noreferrer">AEM Sidekick</a> to view migration data.</p>';
       }
       throw new Error('User not logged in');
     }
