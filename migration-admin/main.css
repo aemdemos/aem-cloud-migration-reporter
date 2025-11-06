@@ -169,7 +169,8 @@
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding: 24px;
+    padding-top: 32px !important;
+    padding-bottom: 32px !important;
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
     flex: 1;
     min-width: 400px;
