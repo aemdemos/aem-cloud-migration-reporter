@@ -151,6 +151,8 @@ class MigrationsApp {
    */
   setupEventListeners() {
     const searchButton = document.getElementById('search-button');
+    const dateRangeSelect = document.getElementById('date-range-select');
+    const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
 
     // Handle search button click - always load fresh data
     if (searchButton) {
@@ -159,6 +161,23 @@ class MigrationsApp {
           // eslint-disable-next-line no-console
           console.error('Unhandled error in startMigrationSearch:', error);
         });
+      });
+    }
+
+    // Handle date range change - automatically fetch new data
+    if (dateRangeSelect) {
+      dateRangeSelect.addEventListener('change', () => {
+        this.startMigrationSearch().catch((error) => {
+          // eslint-disable-next-line no-console
+          console.error('Unhandled error in startMigrationSearch:', error);
+        });
+      });
+    }
+
+    // Handle customer search input - filter locally with spinner
+    if (customerSearch) {
+      customerSearch.addEventListener('input', () => {
+        this.handleCustomerSearchFilter();
       });
     }
 
@@ -191,6 +210,36 @@ class MigrationsApp {
     migrationsTable.enableSorting();
   }
 
+  /**
+   * Handle customer search filter with spinner
+   */
+  handleCustomerSearchFilter() {
+    const spinner = document.getElementById('loading-spinner');
+    const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
+
+    if (!customerSearch) return;
+
+    // Show spinner and set loading state
+    document.body.classList.add('loading');
+    if (spinner) spinner.classList.remove('hidden');
+
+    // Use requestAnimationFrame to ensure DOM updates are applied before filtering
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const searchTerm = customerSearch.value;
+        this.filterMigrations(searchTerm);
+
+        // Update summary stats based on filtered results
+        const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
+        this.renderIngestionsCount(totalIngestions);
+
+        // Hide spinner and remove loading state
+        document.body.classList.remove('loading');
+        if (spinner) spinner.classList.add('hidden');
+      });
+    });
+  }
+
   // eslint-disable-next-line class-methods-use-this
   computeIngestionStats(migrations) {
     let total = 0;
@@ -216,26 +265,26 @@ class MigrationsApp {
    */
   async startMigrationSearch() {
     const spinner = document.getElementById('loading-spinner');
-    const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
+    const graphWrapper = document.getElementById('line-graph-wrapper');
 
     try {
       // Ensure user profile is available
       await this.ensureUserProfile();
 
-      // Show spinner, hide table content
+      // Show spinner, set loading state, and clear old graphs
+      document.body.classList.add('loading');
       if (spinner) spinner.classList.remove('hidden');
-      if (container) container.classList.add('hidden');
+      if (graphWrapper) graphWrapper.innerHTML = ''; // Clear previous graphs
 
-      // Show loading state
+      // Show loading state for the table
       migrationsTable.initTable([]);
       migrationsTable.enableSorting();
 
       // Fetch customer migration data
       const dateRangeSelect = document.getElementById('date-range-select');
       const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_MONTH';
-      const dateRange = DateRange[selectedRange] || DateRange.LAST_MONTH;
 
-      const resp = await getCustomerMigrationInfo(dateRange);
+      const resp = await getCustomerMigrationInfo(selectedRange);
 
       let body;
 
@@ -277,7 +326,6 @@ class MigrationsApp {
 
       // Render line graph with all migrations (not filtered by customer search)
       this.renderLineGraph(this.migrations, selectedRange);
-
     } catch (error) {
       if (error.message === 'User not logged in') return;
 
@@ -286,9 +334,9 @@ class MigrationsApp {
         errorContainer.innerHTML = '<p class="error">Failed to load migration data.</p>';
       }
     } finally {
-      // Hide spinner, show table again
+      // Hide spinner and remove loading state
+      document.body.classList.remove('loading');
       if (spinner) spinner.classList.add('hidden');
-      if (container) container.classList.remove('hidden');
     }
   }
 
