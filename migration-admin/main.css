@@ -118,6 +118,21 @@
    Tables
    =============================== */
 
+/* Sort arrows for table headers */
+.styled-table th.sorted-asc::after {
+    content: "▲";       /* up arrow */
+    margin-left: 8px;
+    font-size: 0.7em;
+    color: #2563eb;    /* blue arrow */
+}
+
+.styled-table th.sorted-desc::after {
+    content: "▼";       /* down arrow */
+    margin-left: 8px;
+    font-size: 0.7em;
+    color: #2563eb;
+}
+
 .styled-table {
     width: 100%;
     border-collapse: separate;
