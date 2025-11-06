@@ -43,8 +43,11 @@ class MigrationsApp {
       this.setupEventListeners();
       MigrationsApp.setupSidekickLogout();
 
-      // Load graphs on page entry with LAST_MONTH data
-      this.loadInitialGraphs();
+      // Load graphs on page entry with LAST_2_MONTHS data
+      this.loadInitialGraphs().catch((error) => {
+        // eslint-disable-next-line no-console
+        console.error('Failed to load initial graphs:', error);
+      });
     } catch (error) {
       // Error already handled in setupUserProfile (alert shown, UI disabled)
       // eslint-disable-next-line no-console
@@ -193,7 +196,7 @@ class MigrationsApp {
       this.filteredMigrations = [...this.migrations];
     } else {
       // eslint-disable-next-line max-len
-      this.filteredMigrations = this.migrations.filter((migration) => migration.customerName && migration.customerName.toLowerCase().includes(lowerSearchTerm));
+      this.filteredMigrations = this.migrations.filter((migration) => migration?.customerName?.toLowerCase().includes(lowerSearchTerm));
     }
 
     migrationsTable.initTable(this.filteredMigrations);
@@ -201,7 +204,35 @@ class MigrationsApp {
   }
 
   /**
-   * Load initial graphs on page entry with last 60 Days data
+   * Process API response and normalize to migrations array
+   * @param {Response|Array|Object} resp - The API response
+   * @returns {Promise<Array>} - Array of migrations
+   */
+  // eslint-disable-next-line class-methods-use-this
+  async processApiResponse(resp) {
+    let body;
+
+    if (typeof Response !== 'undefined' && resp instanceof Response) {
+      try {
+        body = await resp.json();
+      } catch (e) {
+        body = null;
+      }
+    } else if (Array.isArray(resp)) {
+      body = resp;
+    } else {
+      body = resp;
+    }
+
+    // Normalize migrations array
+    if (Array.isArray(body)) {
+      return body;
+    }
+    return [];
+  }
+
+  /**
+   * Load graphs on page entry with LAST_2_MONTHS data
    */
   async loadInitialGraphs() {
     const spinner = document.getElementById('loading-spinner');
@@ -215,29 +246,10 @@ class MigrationsApp {
       await this.ensureUserProfile();
 
       // Fetch last 60 days data for graphs
-      const resp = await getCustomerMigrationInfo('LAST_2_MONTHS');
+      const resp = await getCustomerMigrationInfo(DateRange.LAST_2_MONTHS);
+      const graphMigrations = await this.processApiResponse(resp);
 
-      let body;
-
-      if (typeof Response !== 'undefined' && resp instanceof Response) {
-        try {
-          body = await resp.json();
-        } catch (e) {
-          body = null;
-        }
-      } else if (Array.isArray(resp)) {
-        body = resp;
-      } else {
-        body = resp;
-      }
-
-      // Normalize migrations array
-      let graphMigrations = [];
-      if (Array.isArray(body)) {
-        graphMigrations = body;
-      }
-
-      // Render graphs with LAST_MONTH data
+      // Render graphs with LAST_2_MONTHS data
       this.renderGraph(graphMigrations);
     } catch (error) {
       // Silently fail - graphs will just not show if there's an error
@@ -323,27 +335,7 @@ class MigrationsApp {
       const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_1_MONTH';
 
       const resp = await getCustomerMigrationInfo(selectedRange);
-
-      let body;
-
-      if (typeof Response !== 'undefined' && resp instanceof Response) {
-        try {
-          body = await resp.json();
-        } catch (e) {
-          body = null;
-        }
-      } else if (Array.isArray(resp)) {
-        body = resp;
-      } else {
-        body = resp;
-      }
-
-      // Normalize migrations array
-      if (Array.isArray(body)) {
-        this.migrations = body;
-      } else {
-        this.migrations = [];
-      }
+      this.migrations = await this.processApiResponse(resp);
 
       // Sort customer Names alphabetically for predictable loading
       this.migrations.sort((a, b) => a.customerName.localeCompare(b.customerName));

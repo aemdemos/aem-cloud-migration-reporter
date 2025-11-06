@@ -176,36 +176,67 @@ export function createCustomersGraph(migrations) {
     title: 'Customers Running Ingestions Last 60 Days',
     barColor: '#3b82f6',
     calculateData: (migs) => {
-      // Filter migrations with valid last ingestion dates
-      const validMigrations = migs.filter((m) => m.lastIngestion && m.lastIngestion > 0);
+      const now = Date.now();
+      const sixtyDaysAgo = now - (60 * 24 * 60 * 60 * 1000);
+
+      // Filter migrations with ingestionStartDates
+      const validMigrations = migs.filter(
+        (m) => m.ingestionStartDates && Array.isArray(m.ingestionStartDates),
+      );
 
       if (validMigrations.length === 0) {
         return { dataPoints: [], maxCount: 0 };
       }
 
-      // Group and count customers with ingestions
-      const monthGroups = new Map();
+      // Count unique customers per day range
+      const customersPerRange = {
+        '1-10': new Set(),
+        '11-20': new Set(),
+        '21-30': new Set(),
+        '31-40': new Set(),
+        '41-50': new Set(),
+        '51-60': new Set(),
+      };
+
       validMigrations.forEach((migration) => {
-        const date = new Date(migration.lastIngestion);
-        const monthKey = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
-        monthGroups.set(monthKey, (monthGroups.get(monthKey) || 0) + 1);
+        migration.ingestionStartDates.forEach((timestamp) => {
+          // Only count ingestions in the last 60 days
+          if (timestamp >= sixtyDaysAgo && timestamp <= now) {
+            const daysAgo = Math.floor((now - timestamp) / (24 * 60 * 60 * 1000));
+
+            if (daysAgo >= 0 && daysAgo < 10) {
+              customersPerRange['1-10'].add(migration.customerName);
+            } else if (daysAgo >= 10 && daysAgo < 20) {
+              customersPerRange['11-20'].add(migration.customerName);
+            } else if (daysAgo >= 20 && daysAgo < 30) {
+              customersPerRange['21-30'].add(migration.customerName);
+            } else if (daysAgo >= 30 && daysAgo < 40) {
+              customersPerRange['31-40'].add(migration.customerName);
+            } else if (daysAgo >= 40 && daysAgo < 50) {
+              customersPerRange['41-50'].add(migration.customerName);
+            } else if (daysAgo >= 50 && daysAgo < 60) {
+              customersPerRange['51-60'].add(migration.customerName);
+            }
+          }
+        });
       });
 
-      const dataPointsArray = Array.from(monthGroups.entries())
-        .map(([, total]) => total)
-        .sort((a, b) => b - a);
+      // Convert Sets to counts and create data points
+      const rangeCounts = {};
+      dayRanges.forEach((range) => {
+        rangeCounts[range] = customersPerRange[range].size;
+      });
 
-      const totalCount = dataPointsArray.length > 0 ? dataPointsArray[0] : 0;
-      const maxCount = Number(totalCount);
+      const maxCount = Math.max(...Object.values(rangeCounts));
 
-      // Distribute count across day ranges (sample data)
+      // Create distributed data
       const distributedData = dayRanges.map((range) => ({
         range,
-        count: Number(totalCount / dayRanges.length),
-        tooltip: `${range} days: ${Math.round(totalCount / dayRanges.length).toLocaleString()} customers`,
+        count: Number(rangeCounts[range]),
+        tooltip: `${range} days: ${rangeCounts[range].toLocaleString()} customers`,
       }));
 
-      return { dataPoints: distributedData, maxCount };
+      return { dataPoints: distributedData, maxCount: maxCount || 1 };
     },
   });
 }
@@ -221,39 +252,62 @@ export function createIngestionsGraph(migrations) {
     title: 'Number of Ingestions Last 60 Days',
     barColor: '#10b981',
     calculateData: (migs) => {
-      // Filter migrations with valid last ingestion dates and total ingestion counts
+      const now = Date.now();
+      const sixtyDaysAgo = now - (60 * 24 * 60 * 60 * 1000);
+
+      // Filter migrations with ingestionStartDates
       const validMigrations = migs.filter(
-        (m) => m.lastIngestion && m.lastIngestion > 0 && m.totalIngestions,
+        (m) => m.ingestionStartDates && Array.isArray(m.ingestionStartDates),
       );
 
       if (validMigrations.length === 0) {
         return { dataPoints: [], maxCount: 0 };
       }
 
-      // Group by month and sum total ingestions
-      const monthGroups = new Map();
+      // Initialize counts for each day range
+      const rangeCounts = {
+        '1-10': 0,
+        '11-20': 0,
+        '21-30': 0,
+        '31-40': 0,
+        '41-50': 0,
+        '51-60': 0,
+      };
+
+      // Count ingestions per day range
       validMigrations.forEach((migration) => {
-        const date = new Date(migration.lastIngestion);
-        const monthKey = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`;
-        const currentTotal = monthGroups.get(monthKey) || 0;
-        monthGroups.set(monthKey, currentTotal + (Number(migration.totalIngestions) || 0));
+        migration.ingestionStartDates.forEach((timestamp) => {
+          // Only count ingestions in the last 60 days
+          if (timestamp >= sixtyDaysAgo && timestamp <= now) {
+            const daysAgo = Math.floor((now - timestamp) / (24 * 60 * 60 * 1000));
+
+            if (daysAgo >= 0 && daysAgo < 10) {
+              rangeCounts['1-10'] += 1;
+            } else if (daysAgo >= 10 && daysAgo < 20) {
+              rangeCounts['11-20'] += 1;
+            } else if (daysAgo >= 20 && daysAgo < 30) {
+              rangeCounts['21-30'] += 1;
+            } else if (daysAgo >= 30 && daysAgo < 40) {
+              rangeCounts['31-40'] += 1;
+            } else if (daysAgo >= 40 && daysAgo < 50) {
+              rangeCounts['41-50'] += 1;
+            } else if (daysAgo >= 50 && daysAgo < 60) {
+              rangeCounts['51-60'] += 1;
+            }
+          }
+        });
       });
 
-      const dataPointsArray = Array.from(monthGroups.entries())
-        .map(([, total]) => total)
-        .sort((a, b) => b - a);
+      const maxCount = Math.max(...Object.values(rangeCounts));
 
-      const totalCount = dataPointsArray.length > 0 ? dataPointsArray[0] : 0;
-      const maxCount = Number(totalCount);
-
-      // Distribute count across day ranges (sample data)
+      // Create distributed data
       const distributedData = dayRanges.map((range) => ({
         range,
-        count: Number(totalCount / dayRanges.length),
-        tooltip: `${range} days: ${Math.round(totalCount / dayRanges.length).toLocaleString()} total ingestions`,
+        count: Number(rangeCounts[range]),
+        tooltip: `${range} days: ${rangeCounts[range].toLocaleString()} ingestions`,
       }));
 
-      return { dataPoints: distributedData, maxCount };
+      return { dataPoints: distributedData, maxCount: maxCount || 1 };
     },
   });
 }
