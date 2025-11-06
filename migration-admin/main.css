@@ -156,7 +156,16 @@
 }
 
 .table-summary-wrapper {
-    padding: 20px !important;
+    display: flex;
+    justify-content: center; /* centers horizontally */
+    width: 100%;
+}
+
+.table-summary {
+    display: inline-flex; /* keeps spans inline */
+    gap: 8px; /* optional: spacing between items */
+    align-items: center;
+    text-align: center;
 }
 
 /* ===============================
