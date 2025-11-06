@@ -33,7 +33,7 @@
     padding: 0 16px;
 }
 
-.migration-admin .search-input-wrapper {
+.migration-admin .search-inputs {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -95,8 +95,7 @@
 }
 
 .migration-admin .date-range-wrapper select {
-    font-size: 14px;
-    padding: 10px 10px;
+    padding: 10px;
     font-size: 14px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
@@ -185,43 +184,74 @@
 }
 
 /* ===============================
-   Line Graph
+   Graph
    =============================== */
 
-#line-graph-wrapper {
+#graph-wrapper {
     max-width: 1600px;
     margin: 0 auto 32px;
     padding: 0 24px;
     display: flex;
     gap: 24px;
     flex-wrap: wrap;
+    justify-content: center;
 }
 
-.line-graph-container {
+.graph-container {
     background: #fff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
-    padding-top: 32px !important;
-    padding-bottom: 32px !important;
+    padding: 32px 24px;
     box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
     flex: 1;
     min-width: 400px;
+    max-width: 700px;
 }
 
-.line-graph-title {
+.graph-title {
     margin: 0 0 20px;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: #1f2937;
     text-align: center;
 }
 
-.line-graph-svg {
+.graph-svg {
     width: 100%;
     height: auto;
-    max-width: 800px;
-    margin: 0 auto;
     display: block;
+}
+
+.graph-svg .axis-label {
+    font-size: 12px;
+    fill: #6b7280;
+}
+
+.graph-svg .axis-title {
+    font-size: 14px;
+    fill: #374151;
+    font-weight: 500;
+}
+
+.graph-svg .grid-lines line {
+    stroke: #e5e7eb;
+    stroke-width: 1;
+}
+
+.graph-svg .data-bar {
+    cursor: pointer;
+    transition: opacity 0.2s;
+}
+
+.graph-svg .data-bar:hover {
+    opacity: 1 !important;
+}
+
+.no-data {
+    text-align: center;
+    color: #6b7280;
+    padding: 40px 20px;
+    font-size: 1rem;
 }
 
 /* ===============================
@@ -248,3 +278,11 @@
    =============================== */
 
 .hidden { display: none; }
+
+/* Hide content when body is in loading state */
+body.loading .filters-container,
+body.loading #migrations-container,
+body.loading #graph-wrapper {
+  display: none;
+}
+

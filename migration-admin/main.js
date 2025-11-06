@@ -17,7 +17,7 @@ import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import { DateRange } from './DateRange.js';
 import getUserProfile from './userProfile.js';
-import { createLineGraph, createTotalIngestionsGraph } from './lineGraph.js';
+import { createCustomersGraph, createIngestionsGraph } from './graph.js';
 
 const migrationsTable = new MigrationsTable();
 
@@ -43,7 +43,8 @@ class MigrationsApp {
       this.setupEventListeners();
       MigrationsApp.setupSidekickLogout();
 
-      // Don't load data automatically - wait for user to search
+      // Load graphs on page entry with LAST_MONTH data
+      this.loadInitialGraphs();
     } catch (error) {
       // Error already handled in setupUserProfile (alert shown, UI disabled)
       // eslint-disable-next-line no-console
@@ -200,6 +201,56 @@ class MigrationsApp {
   }
 
   /**
+   * Load initial graphs on page entry with last 60 Days data
+   */
+  async loadInitialGraphs() {
+    const spinner = document.getElementById('loading-spinner');
+
+    try {
+      // Show spinner and set loading state
+      document.body.classList.add('loading');
+      if (spinner) spinner.classList.remove('hidden');
+
+      // Ensure user profile is available
+      await this.ensureUserProfile();
+
+      // Fetch last 60 days data for graphs
+      const resp = await getCustomerMigrationInfo('LAST_2_MONTHS');
+
+      let body;
+
+      if (typeof Response !== 'undefined' && resp instanceof Response) {
+        try {
+          body = await resp.json();
+        } catch (e) {
+          body = null;
+        }
+      } else if (Array.isArray(resp)) {
+        body = resp;
+      } else {
+        body = resp;
+      }
+
+      // Normalize migrations array
+      let graphMigrations = [];
+      if (Array.isArray(body)) {
+        graphMigrations = body;
+      }
+
+      // Render graphs with LAST_MONTH data
+      this.renderGraph(graphMigrations);
+    } catch (error) {
+      // Silently fail - graphs will just not show if there's an error
+      // eslint-disable-next-line no-console
+      console.error('Failed to load initial graphs:', error);
+    } finally {
+      // Hide spinner and remove loading state
+      document.body.classList.remove('loading');
+      if (spinner) spinner.classList.add('hidden');
+    }
+  }
+
+  /**
    * Handle customer search filter with spinner
    */
   handleCustomerSearchFilter() {
@@ -254,16 +305,14 @@ class MigrationsApp {
    */
   async startMigrationSearch() {
     const spinner = document.getElementById('loading-spinner');
-    const graphWrapper = document.getElementById('line-graph-wrapper');
 
     try {
       // Ensure user profile is available
       await this.ensureUserProfile();
 
-      // Show spinner, set loading state, and clear old graphs
+      // Show spinner and set loading state
       document.body.classList.add('loading');
       if (spinner) spinner.classList.remove('hidden');
-      if (graphWrapper) graphWrapper.innerHTML = ''; // Clear previous graphs
 
       // Show loading state for the table
       migrationsTable.initTable([]);
@@ -312,9 +361,6 @@ class MigrationsApp {
 
       const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
       this.renderIngestionsCount(totalIngestions);
-
-      // Render line graph with all migrations (not filtered by customer search)
-      this.renderLineGraph(this.migrations, selectedRange);
     } catch (error) {
       if (error.message === 'User not logged in') return;
 
@@ -363,21 +409,21 @@ class MigrationsApp {
   }
 
   /**
-   * Render line graph showing last ingestions over time
+   * Render graph showing ingestions for last 60 days
    */
   // eslint-disable-next-line class-methods-use-this
-  renderLineGraph(migrations, dateRange) {
-    const graphWrapper = document.getElementById('line-graph-wrapper');
+  renderGraph(migrations) {
+    const graphWrapper = document.getElementById('graph-wrapper');
     if (!graphWrapper) return;
 
     graphWrapper.innerHTML = '';
 
-    // Create total ingestions graph
-    const ingestionsGraph = createTotalIngestionsGraph(migrations, dateRange);
+    // Create ingestions graph
+    const ingestionsGraph = createIngestionsGraph(migrations);
     graphWrapper.appendChild(ingestionsGraph);
 
     // Create customers graph
-    const customersGraph = createLineGraph(migrations, dateRange);
+    const customersGraph = createCustomersGraph(migrations);
     graphWrapper.appendChild(customersGraph);
   }
 }
