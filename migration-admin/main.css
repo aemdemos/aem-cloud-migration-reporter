@@ -156,8 +156,7 @@
 }
 
 .table-summary-wrapper {
-    padding: 20px;
-    width: 475px;
+    padding: 20px !important;
 }
 
 /* ===============================
