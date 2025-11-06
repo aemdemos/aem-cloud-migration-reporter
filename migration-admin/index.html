@@ -19,23 +19,22 @@
         <h2><img src="../favicon.ico" alt="Adobe Logo" class="adobe-logo" /> AEM Cloud Migrations Reporter </h2>
     </div>
     <!-- Search Filters -->
-    <div class="search-filters">
-      <div>
-        <div class="search-input-wrapper">
-          <input type="text" id="customer-search" placeholder="Search customer name ..." />
-          <button type="button" id="search-button" class="search-button">Search</button>
+    <div class="filters-container">
+      <div class="search-input-wrapper">
+        <div class="date-range-wrapper">
+          <label for="date-range-select">Date range:</label>
+          <select id="date-range-select">
+            <option value="LAST_MONTH" selected>Last Month</option>
+            <option value="LAST_3_MONTHS">Last 3 Months</option>
+            <option value="LAST_6_MONTHS">Last 6 Months</option>
+            <option value="LAST_YEAR">Last Year</option>
+          </select>
         </div>
-      </div>
-    </div>
+        <input type="text" id="customer-search" placeholder="Search customer name ..." />
+        <button type="button" id="search-button" class="search-button">Search</button>
 
-    <div class="date-range-wrapper">
-      <label for="date-range-select">Date range:</label>
-      <select id="date-range-select">
-        <option value="LAST_MONTH" selected>Last Month</option>
-        <option value="LAST_3_MONTHS">Last 3 Months</option>
-        <option value="LAST_6_MONTHS">Last 6 Months</option>
-        <option value="LAST_YEAR">Last Year</option>
-      </select>
+      </div>
+
     </div>
      <!-- Line Graph Container -->
      <div id="line-graph-wrapper"></div>
