@@ -246,7 +246,7 @@ class MigrationsApp {
       await this.ensureUserProfile();
 
       // Fetch last 60 days data for graphs
-      const resp = await getCustomerMigrationInfo(DateRange.LAST_2_MONTHS);
+      const resp = await getCustomerMigrationInfo(DateRange.LAST_2_MONTHS.value);
       const graphMigrations = await this.processApiResponse(resp);
 
       // Render graphs with LAST_2_MONTHS data

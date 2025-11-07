@@ -13,7 +13,7 @@
 import API_ENDPOINT from './config.js';
 import { DateRange } from './DateRange.js';
 
-export const getCustomerMigrationInfo = async (dateRange = DateRange.LAST_1_MONTH) => {
+export const getCustomerMigrationInfo = async (dateRange = DateRange.LAST_1_MONTH.value) => {
   try {
     const url = new URL(`${API_ENDPOINT}/customerMigrationInfo`);
     url.searchParams.set('dateRange', dateRange);
