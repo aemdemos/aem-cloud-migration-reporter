@@ -4,6 +4,22 @@
  */
 
 /* ===============================
+   Utility Classes
+   =============================== */
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ===============================
    Layout for migration-admin
    =============================== */
 
@@ -254,7 +270,7 @@
     width: 48px;
     height: 48px;
     animation: spin 1s linear infinite;
-    margin: 60px auto !important;
+    margin: 24px auto;
 }
 
 @keyframes spin {
@@ -270,8 +286,7 @@
 
 /* Hide content when body is in loading state */
 body.loading .filters-form,
-body.loading #migrations-container,
-body.loading #graph-wrapper {
+body.loading #migrations-container {
   display: none;
 }
 

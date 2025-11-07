@@ -19,8 +19,6 @@
         <h2><img src="../favicon.ico" alt="Adobe Logo" class="adobe-logo" /> AEM Cloud Migrations Reporter </h2>
     </div>
 
-    <div id="loading-spinner" class="spinner hidden"></div>
-
     <!-- Graph Container -->
     <div id="graph-wrapper"></div>
 
@@ -32,9 +30,12 @@
         <option value="LAST_2_MONTHS">Last 2 Months</option>
         <option value="LAST_3_MONTHS">Last 3 Months</option>
       </select>
+      <label for="customer-search" class="visually-hidden">Filter customers</label>
       <input type="text" id="customer-search" placeholder="Filter customers (optional)" />
       <button type="button" id="search-button" class="search-button">Search</button>
     </form>
+
+    <div id="loading-spinner" class="spinner hidden"></div>
 
     <!-- Migrations Container -->
     <div id="migrations-container">
