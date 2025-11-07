@@ -145,7 +145,7 @@ function createBarGraph(config) {
   // Y-axis label
   const yAxisLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   yAxisLabelText.setAttribute('x', String(-height / 2));
-  yAxisLabelText.setAttribute('y', String(20));
+  yAxisLabelText.setAttribute('y', String(15));
   yAxisLabelText.setAttribute('transform', 'rotate(-90)');
   yAxisLabelText.setAttribute('text-anchor', 'middle');
   yAxisLabelText.setAttribute('class', 'axis-title');

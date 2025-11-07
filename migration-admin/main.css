@@ -230,12 +230,12 @@
 }
 
 .graph-svg .axis-label {
-    font-size: 12px;
+    font-size: 16px;
     fill: #6b7280;
 }
 
 .graph-svg .axis-title {
-    font-size: 14px;
+    font-size: 18px;
     fill: #374151;
     font-weight: 500;
 }
