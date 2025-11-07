@@ -281,10 +281,8 @@
 
 .hidden { display: none; }
 
-/* Hide content when body is in loading state */
-body.loading .filters-container,
-body.loading #migrations-container,
-body.loading #graph-wrapper {
+/* Hide table content when body is in loading state */
+body.loading #migrations-container {
   display: none;
 }
 
