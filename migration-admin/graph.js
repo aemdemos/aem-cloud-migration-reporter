@@ -175,13 +175,12 @@ export function createCustomersGraph(migrations) {
 
   return createBarGraph({
     migrations,
-    title: 'Unique Customers by Days Since Last Ingestion',
+    title: 'Customers Running Ingestions - Last 60 Days',
     yAxisLabel: 'Number of Customers',
     xAxisLabel: 'Days Ago',
     barColor: '#3b82f6',
     calculateData: (migs) => {
       const now = Date.now();
-      const sixtyDaysAgo = now - (60 * 24 * 60 * 60 * 1000);
 
       // Filter migrations with ingestionStartDates
       const validMigrations = migs.filter(
@@ -204,10 +203,9 @@ export function createCustomersGraph(migrations) {
 
       validMigrations.forEach((migration) => {
         migration.ingestionStartDates.forEach((timestamp) => {
-          // Only count ingestions in the last 60 days
-          if (timestamp >= sixtyDaysAgo && timestamp <= now) {
-            const daysAgo = Math.floor((now - timestamp) / (24 * 60 * 60 * 1000));
-
+          // Include all ingestions
+          const daysAgo = Math.floor((now - timestamp) / (86400000));
+          if (daysAgo >= 0) {
             if (daysAgo >= 0 && daysAgo < 10) {
               customersPerRange['1-10'].add(migration.customerName);
             } else if (daysAgo >= 10 && daysAgo < 20) {
@@ -218,7 +216,7 @@ export function createCustomersGraph(migrations) {
               customersPerRange['31-40'].add(migration.customerName);
             } else if (daysAgo >= 40 && daysAgo < 50) {
               customersPerRange['41-50'].add(migration.customerName);
-            } else if (daysAgo >= 50 && daysAgo < 60) {
+            } else if (daysAgo >= 50) {
               customersPerRange['51-60'].add(migration.customerName);
             }
           }
@@ -253,13 +251,12 @@ export function createIngestionsGraph(migrations) {
 
   return createBarGraph({
     migrations,
-    title: 'Ingestion Activity by Time Period',
+    title: 'Ingestion Activity - Last 60 Days',
     yAxisLabel: 'Number of Ingestions',
     xAxisLabel: 'Days Ago',
     barColor: '#10b981',
     calculateData: (migs) => {
       const now = Date.now();
-      const sixtyDaysAgo = now - (60 * 24 * 60 * 60 * 1000);
 
       // Filter migrations with ingestionStartDates
       const validMigrations = migs.filter(
@@ -283,21 +280,21 @@ export function createIngestionsGraph(migrations) {
       // Count ingestions per day range
       validMigrations.forEach((migration) => {
         migration.ingestionStartDates.forEach((timestamp) => {
-          // Only count ingestions in the last 60 days
-          if (timestamp >= sixtyDaysAgo && timestamp <= now) {
+          // Include all ingestions
+          if (timestamp <= now) {
             const daysAgo = Math.floor((now - timestamp) / (24 * 60 * 60 * 1000));
 
-            if (daysAgo >= 0 && daysAgo < 10) {
+            if (daysAgo >= 0 && daysAgo <= 9) {
               rangeCounts['1-10'] += 1;
-            } else if (daysAgo >= 10 && daysAgo < 20) {
+            } else if (daysAgo >= 10 && daysAgo <= 19) {
               rangeCounts['11-20'] += 1;
-            } else if (daysAgo >= 20 && daysAgo < 30) {
+            } else if (daysAgo >= 20 && daysAgo <= 29) {
               rangeCounts['21-30'] += 1;
-            } else if (daysAgo >= 30 && daysAgo < 40) {
+            } else if (daysAgo >= 30 && daysAgo <= 39) {
               rangeCounts['31-40'] += 1;
-            } else if (daysAgo >= 40 && daysAgo < 50) {
+            } else if (daysAgo >= 40 && daysAgo <= 49) {
               rangeCounts['41-50'] += 1;
-            } else if (daysAgo >= 50 && daysAgo < 60) {
+            } else if (daysAgo >= 50) {
               rangeCounts['51-60'] += 1;
             }
           }
