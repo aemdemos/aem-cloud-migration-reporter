@@ -287,6 +287,7 @@
 .hidden { display: none; }
 
 /* Hide content when body is in loading state */
+body.loading .filters-form,
 body.loading #migrations-container {
   display: none;
 }
