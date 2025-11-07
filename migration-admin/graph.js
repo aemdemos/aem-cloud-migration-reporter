@@ -15,6 +15,8 @@
  * @param {Object} config - Configuration object
  * @param {Array} config.migrations - Array of migration data
  * @param {string} config.title - Graph title
+ * @param {string} config.yAxisLabel - Y-axis label
+ * @param {string} config.xAxisLabel - X-axis label
  * @param {string} config.barColor - Bar color (hex)
  * @param {Function} config.calculateData - Function to calculate bar data from migrations
  * @returns {HTMLElement} - The graph container element
@@ -141,23 +143,23 @@ function createBarGraph(config) {
   svg.appendChild(xAxisGroup);
 
   // Y-axis label
-  const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  yAxisLabel.setAttribute('x', String(-height / 2));
-  yAxisLabel.setAttribute('y', String(20));
-  yAxisLabel.setAttribute('transform', 'rotate(-90)');
-  yAxisLabel.setAttribute('text-anchor', 'middle');
-  yAxisLabel.setAttribute('class', 'axis-title');
-  yAxisLabel.textContent = 'Count';
-  svg.appendChild(yAxisLabel);
+  const yAxisLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  yAxisLabelText.setAttribute('x', String(-height / 2));
+  yAxisLabelText.setAttribute('y', String(20));
+  yAxisLabelText.setAttribute('transform', 'rotate(-90)');
+  yAxisLabelText.setAttribute('text-anchor', 'middle');
+  yAxisLabelText.setAttribute('class', 'axis-title');
+  yAxisLabelText.textContent = config.yAxisLabel;
+  svg.appendChild(yAxisLabelText);
 
   // X-axis label
-  const xAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  xAxisLabel.setAttribute('x', String(padding.left + graphWidth / 2));
-  xAxisLabel.setAttribute('y', String(height - 5));
-  xAxisLabel.setAttribute('text-anchor', 'middle');
-  xAxisLabel.setAttribute('class', 'axis-title');
-  xAxisLabel.textContent = 'Days';
-  svg.appendChild(xAxisLabel);
+  const xAxisLabelText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  xAxisLabelText.setAttribute('x', String(padding.left + graphWidth / 2));
+  xAxisLabelText.setAttribute('y', String(height - 5));
+  xAxisLabelText.setAttribute('text-anchor', 'middle');
+  xAxisLabelText.setAttribute('class', 'axis-title');
+  xAxisLabelText.textContent = config.xAxisLabel;
+  svg.appendChild(xAxisLabelText);
 
   // Assemble container
   container.appendChild(titleElement);
@@ -173,7 +175,9 @@ export function createCustomersGraph(migrations) {
 
   return createBarGraph({
     migrations,
-    title: 'Customers Running Ingestions Last 60 Days',
+    title: 'Unique Customers by Days Since Last Ingestion',
+    yAxisLabel: 'Number of Customers',
+    xAxisLabel: 'Days Ago',
     barColor: '#3b82f6',
     calculateData: (migs) => {
       const now = Date.now();
@@ -233,7 +237,7 @@ export function createCustomersGraph(migrations) {
       const distributedData = dayRanges.map((range) => ({
         range,
         count: Number(rangeCounts[range]),
-        tooltip: `${range} days: ${rangeCounts[range].toLocaleString()} customers`,
+        tooltip: `${range} days ago: ${rangeCounts[range].toLocaleString()} unique customers`,
       }));
 
       return { dataPoints: distributedData, maxCount: maxCount || 1 };
@@ -249,7 +253,9 @@ export function createIngestionsGraph(migrations) {
 
   return createBarGraph({
     migrations,
-    title: 'Number of Ingestions Last 60 Days',
+    title: 'Ingestion Activity by Time Period',
+    yAxisLabel: 'Number of Ingestions',
+    xAxisLabel: 'Days Ago',
     barColor: '#10b981',
     calculateData: (migs) => {
       const now = Date.now();
@@ -304,7 +310,7 @@ export function createIngestionsGraph(migrations) {
       const distributedData = dayRanges.map((range) => ({
         range,
         count: Number(rangeCounts[range]),
-        tooltip: `${range} days: ${rangeCounts[range].toLocaleString()} ingestions`,
+        tooltip: `${range} days ago: ${rangeCounts[range].toLocaleString()} ingestions`,
       }));
 
       return { dataPoints: distributedData, maxCount: maxCount || 1 };
