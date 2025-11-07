@@ -4,22 +4,6 @@
  */
 
 /* ===============================
-   Utility Classes
-   =============================== */
-
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-    border-width: 0;
-}
-
-/* ===============================
    Layout for migration-admin
    =============================== */
 
@@ -41,15 +25,21 @@
    Filters Container (Search + Date)
    =============================== */
 
-.migration-admin .filters-form {
+.migration-admin .filters-container {
+    display: flex;
+    justify-content: center;
+    margin: 0 auto 32px;
+    max-width: 800px;              /* matches typical title width */
+    padding: 0 16px;
+}
+
+.migration-admin .search-inputs {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: wrap;               /* allows wrapping on small screens */
     gap: 12px;
-    margin: 0 auto 32px;
-    max-width: 800px;
-    padding: 0 16px;
+    width: 100%;
 }
 
 .migration-admin #customer-search {
@@ -93,17 +83,22 @@
 }
 
 /* Date range select */
-.migration-admin .filters-form label {
+.migration-admin .date-range-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.migration-admin .date-range-wrapper label {
     font-size: 0.9rem;
     color: #4b5563;
 }
 
-.migration-admin .filters-form select {
+.migration-admin .date-range-wrapper select {
     padding: 10px;
     font-size: 14px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
-    margin-right: 8px;
 }
 
 /* ===============================
@@ -270,7 +265,7 @@
     width: 48px;
     height: 48px;
     animation: spin 1s linear infinite;
-    margin: 24px auto;
+    margin: 60px auto !important;
 }
 
 @keyframes spin {
@@ -285,8 +280,9 @@
 .hidden { display: none; }
 
 /* Hide content when body is in loading state */
-body.loading .filters-form,
-body.loading #migrations-container {
+body.loading .filters-container,
+body.loading #migrations-container,
+body.loading #graph-wrapper {
   display: none;
 }
 
