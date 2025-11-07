@@ -4,6 +4,22 @@
  */
 
 /* ===============================
+   Utility Classes
+   =============================== */
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* ===============================
    Layout for migration-admin
    =============================== */
 
@@ -25,21 +41,15 @@
    Filters Container (Search + Date)
    =============================== */
 
-.migration-admin .filters-container {
-    display: flex;
-    justify-content: center;
-    margin: 0 auto 32px;
-    max-width: 800px;              /* matches typical title width */
-    padding: 0 16px;
-}
-
-.migration-admin .search-inputs {
+.migration-admin .filters-form {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-wrap: wrap;               /* allows wrapping on small screens */
+    flex-wrap: wrap;
     gap: 12px;
-    width: 100%;
+    margin: 0 auto 32px;
+    max-width: 800px;
+    padding: 0 16px;
 }
 
 .migration-admin #customer-search {
@@ -83,22 +93,17 @@
 }
 
 /* Date range select */
-.migration-admin .date-range-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.migration-admin .date-range-wrapper label {
+.migration-admin .filters-form label {
     font-size: 0.9rem;
     color: #4b5563;
 }
 
-.migration-admin .date-range-wrapper select {
+.migration-admin .filters-form select {
     padding: 10px;
     font-size: 14px;
     border: 1px solid #d1d5db;
     border-radius: 8px;
+    margin-right: 8px;
 }
 
 /* ===============================
@@ -206,6 +211,8 @@
     flex: 1;
     min-width: 400px;
     max-width: 700px;
+    padding-top: 30px !important;
+    padding-bottom: 30px !important;
 }
 
 .graph-title {
@@ -280,9 +287,7 @@
 .hidden { display: none; }
 
 /* Hide content when body is in loading state */
-body.loading .filters-container,
-body.loading #migrations-container,
-body.loading #graph-wrapper {
+body.loading #migrations-container {
   display: none;
 }
 
