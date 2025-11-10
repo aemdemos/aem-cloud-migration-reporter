@@ -48,7 +48,7 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 12px;
-    margin: 0 auto 32px;
+    margin: 0 auto 12px;
     max-width: 800px;
     padding: 0 16px;
 }
@@ -112,7 +112,7 @@
    =============================== */
 
 .migration-admin #migrations-container {
-    margin-top: 32px;
+    margin-top: 8px;
     background: transparent;
     border-radius: 16px;
     padding: 20px 0;
@@ -195,7 +195,7 @@
 
 #graph-wrapper {
     max-width: 1600px;
-    margin: 0 auto 32px;
+    margin: 0 auto 56px;
     padding: 0 24px;
     display: flex;
     gap: 24px;
