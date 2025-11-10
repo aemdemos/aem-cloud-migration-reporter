@@ -50,7 +50,7 @@ class MigrationsTable {
       tr.setAttribute('data-migration-id', migration.id || '');
       tr.setAttribute('data-ims-org-id', migration.imsOrgId || '');
 
-      const customerNameCell = MigrationsTable.createCell(migration.customerName || '');
+      const customerNameCell = MigrationsTable.createCell(migration.customerName ?? '-', 'string');
       const lastBpaCell = MigrationsTable.createCell(formatDate(migration.bpaReportUploaded), 'date');
       const totalProjectsCell = MigrationsTable.createCell(migration.totalProjects ?? '-', 'numeric');
       const firstCell = MigrationsTable.createCell(formatDate(migration.firstIngestion), 'date');
@@ -61,10 +61,6 @@ class MigrationsTable {
       tr.append(customerNameCell, lastBpaCell, totalProjectsCell, firstCell, lastCell, totalCell, failedCell);
       tbody.appendChild(tr);
     });
-  }
-
-  toggleSortDirection() {
-    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
   }
 
   addSortingToTable(table, migrations) {

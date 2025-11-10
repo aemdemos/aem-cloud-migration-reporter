@@ -11,31 +11,28 @@
  */
 /* eslint-disable no-underscore-dangle */
 
-const sortTable = (data, key, direction = 'asc') => {
+const sortTable = (data, key, direction = 'asc', type = 'string') => {
   const dir = direction === 'asc' ? 1 : -1;
-
-  // Support nested keys like 'lastIngestion'
   const getValue = (obj, path) => path.split('.').reduce((o, k) => (o ? o[k] : null), obj);
 
   return [...data].sort((a, b) => {
     const valA = getValue(a, key);
     const valB = getValue(b, key);
 
-    // Null / undefined handling (put nulls at bottom)
     if (valA == null && valB != null) return 1;
     if (valB == null && valA != null) return -1;
     if (valA == null && valB == null) return 0;
 
-    // Numbers
-    if (typeof valA === 'number' && typeof valB === 'number') return (valA - valB) * dir;
+    switch (type) {
+      case 'numeric':
+        return ((parseFloat(valA) || 0) - (parseFloat(valB) || 0)) * dir;
 
-    // Dates
-    const dateA = new Date(valA);
-    const dateB = new Date(valB);
-    if (!Number.isNaN(dateA) && !Number.isNaN(dateB)) return (dateA - dateB) * dir;
+      case 'date':
+        return ((new Date(valA).getTime() || 0) - (new Date(valB).getTime() || 0)) * dir;
 
-    // Strings
-    return String(valA).localeCompare(String(valB)) * dir;
+      default: // string
+        return String(valA).localeCompare(String(valB), undefined, { sensitivity: 'base' }) * dir;
+    }
   });
 };
 
