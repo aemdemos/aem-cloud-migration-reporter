@@ -85,13 +85,11 @@ class MigrationsApp {
 
       // Render graphs
       this.renderGraph(this.migrations);
-
     } finally {
       document.body.classList.remove('loading');
       if (spinner) spinner.classList.add('hidden');
     }
   }
-
 
   /**
    * Setup user profile for localhost development
@@ -135,6 +133,17 @@ class MigrationsApp {
       searchButton.disabled = true;
     }
 
+    // Hide filters and graphs
+    const filtersForm = document.querySelector('.filters-form');
+    if (filtersForm) {
+      filtersForm.style.display = 'none';
+    }
+
+    const graphWrapper = document.getElementById('graph-wrapper');
+    if (graphWrapper) {
+      graphWrapper.style.display = 'none';
+    }
+
     // Show error message in the container
     const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
     if (container) {
@@ -166,6 +175,17 @@ class MigrationsApp {
       try {
         this.userProfile = await getUserProfile();
       } catch (error) {
+        // Hide filters and graphs
+        const filtersForm = document.querySelector('.filters-form');
+        if (filtersForm) {
+          filtersForm.style.display = 'none';
+        }
+
+        const graphWrapper = document.getElementById('graph-wrapper');
+        if (graphWrapper) {
+          graphWrapper.style.display = 'none';
+        }
+
         const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
         if (container) {
           container.innerHTML = '<p class="error">You are not logged in. Please log in to view migration data.</p>';
@@ -178,6 +198,17 @@ class MigrationsApp {
 
     // Check if user profile is still null after attempting to get it
     if (!this.userProfile) {
+      // Hide filters and graphs
+      const filtersForm = document.querySelector('.filters-form');
+      if (filtersForm) {
+        filtersForm.style.display = 'none';
+      }
+
+      const graphWrapper = document.getElementById('graph-wrapper');
+      if (graphWrapper) {
+        graphWrapper.style.display = 'none';
+      }
+
       const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
       if (container) {
         container.innerHTML = this.isLocalhost
@@ -270,37 +301,6 @@ class MigrationsApp {
   }
 
   /**
-   * Load graphs on page entry with LAST_2_MONTHS data
-   */
-  async loadInitialGraphs() {
-    const spinner = document.getElementById('loading-spinner');
-
-    try {
-      // Show spinner and set loading state
-      document.body.classList.add('loading');
-      if (spinner) spinner.classList.remove('hidden');
-
-      // Ensure user profile is available
-      await this.ensureUserProfile();
-
-      // Fetch last 60 days data for graphs
-      const resp = await getCustomerMigrationInfo(DateRange.LAST_2_MONTHS.value);
-      const graphMigrations = await this.processApiResponse(resp);
-
-      // Render graphs with LAST_2_MONTHS data
-      this.renderGraph(graphMigrations);
-    } catch (error) {
-      // Silently fail - graphs will just not show if there's an error
-      // eslint-disable-next-line no-console
-      console.error('Failed to load initial graphs:', error);
-    } finally {
-      // Hide spinner and remove loading state
-      document.body.classList.remove('loading');
-      if (spinner) spinner.classList.add('hidden');
-    }
-  }
-
-  /**
    * Handle customer search filter with spinner
    */
   handleCustomerSearchFilter() {
@@ -386,6 +386,17 @@ class MigrationsApp {
       this.renderIngestionsCount(totalIngestions);
     } catch (error) {
       if (error.message === 'User not logged in') return;
+
+      // Hide filters and graphs on error
+      const filtersForm = document.querySelector('.filters-form');
+      if (filtersForm) {
+        filtersForm.style.display = 'none';
+      }
+
+      const graphWrapper = document.getElementById('graph-wrapper');
+      if (graphWrapper) {
+        graphWrapper.style.display = 'none';
+      }
 
       const errorContainer = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
       if (errorContainer) {
