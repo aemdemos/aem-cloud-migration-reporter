@@ -266,14 +266,11 @@ class MigrationsApp {
    * Handle customer search filter with spinner
    */
   handleCustomerSearchFilter() {
-    const spinner = document.getElementById('loading-spinner');
     const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
 
     if (!customerSearch) return;
 
     // Show spinner and set loading state
-    document.body.classList.add('loading');
-    if (spinner) spinner.classList.remove('hidden');
 
     // Use requestAnimationFrame to ensure DOM updates are applied before filtering
     requestAnimationFrame(() => {
@@ -284,10 +281,6 @@ class MigrationsApp {
         // Update summary stats based on filtered results
         const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
         this.renderIngestionsCount(totalIngestions);
-
-        // Hide spinner and remove loading state
-        document.body.classList.remove('loading');
-        if (spinner) spinner.classList.add('hidden');
       });
     });
   }
