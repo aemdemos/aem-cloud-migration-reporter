@@ -74,11 +74,12 @@ function createBarGraph(config) {
   svg.appendChild(gridGroup);
 
   // Bars
-  const dayRanges = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60'];
+  const dayRanges = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60'].slice().reverse();
+  const reversedDataPoints = dataPoints.slice().reverse();
   const barWidth = (graphWidth / dayRanges.length) * 0.8;
   const barSpacing = (graphWidth / dayRanges.length) * 0.2;
 
-  dataPoints.forEach((point, index) => {
+  reversedDataPoints.forEach((point, index) => {
     const x = padding.left + (index * graphWidth / dayRanges.length) + (barSpacing / 2);
     const barHeight = (point.count / maxCount * graphHeight);
     const y = padding.top + graphHeight - barHeight;
@@ -137,6 +138,7 @@ function createBarGraph(config) {
   const xAxisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   xAxisGroup.setAttribute('class', 'x-axis');
   dayRanges.forEach((range, index) => {
+    // eslint-disable-next-line max-len
     const x = padding.left + (index * graphWidth / dayRanges.length) + (graphWidth / dayRanges.length / 2);
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
