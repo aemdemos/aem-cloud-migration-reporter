@@ -60,8 +60,8 @@ function createBarGraph(config) {
   const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   gridGroup.setAttribute('class', 'grid-lines');
   const ySteps = 5;
-  for (let i = 0; i <= ySteps; i++) {
-    const y = padding.top + (graphHeight * i / ySteps);
+  for (let i = 0; i <= ySteps; i += 1) {
+    const y = padding.top + ((graphHeight * i) / ySteps);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', String(padding.left));
     line.setAttribute('y1', String(y));
@@ -80,8 +80,8 @@ function createBarGraph(config) {
   const barSpacing = (graphWidth / dayRanges.length) * 0.2;
 
   reversedDataPoints.forEach((point, index) => {
-    const x = padding.left + (index * graphWidth / dayRanges.length) + (barSpacing / 2);
-    const barHeight = (point.count / maxCount * graphHeight);
+    const x = padding.left + ((index * graphWidth) / dayRanges.length) + (barSpacing / 2);
+    const barHeight = ((point.count / maxCount) * graphHeight);
     const y = padding.top + graphHeight - barHeight;
 
     // Bar rectangle
@@ -120,9 +120,9 @@ function createBarGraph(config) {
   // Y-axis labels
   const yAxisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   yAxisGroup.setAttribute('class', 'y-axis');
-  for (let i = 0; i <= ySteps; i++) {
-    const value = Math.round(maxCount - (maxCount * i / ySteps));
-    const y = padding.top + (graphHeight * i / ySteps);
+  for (let i = 0; i <= ySteps; i += 1) {
+    const value = Math.round(maxCount - ((maxCount * i) / ySteps));
+    const y = padding.top + ((graphHeight * i) / ySteps);
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', String(padding.left - 10));
@@ -138,8 +138,8 @@ function createBarGraph(config) {
   const xAxisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   xAxisGroup.setAttribute('class', 'x-axis');
   dayRanges.forEach((range, index) => {
-    // eslint-disable-next-line max-len
-    const x = padding.left + (index * graphWidth / dayRanges.length) + (graphWidth / dayRanges.length / 2);
+    const rangeWidth = graphWidth / dayRanges.length;
+    const x = padding.left + ((index * graphWidth) / dayRanges.length) + (rangeWidth / 2);
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', String(x));
