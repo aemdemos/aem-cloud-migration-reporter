@@ -286,6 +286,12 @@
 
 .hidden { display: none; }
 
+th[data-sort]::after {
+    content: '⇅'; /* Default arrows when not sorted */
+    margin-left: 5px;
+    opacity: 0.5;
+}
+
 /* Hide content when body is in loading state */
 body.loading .filters-form,
 body.loading #migrations-container {
