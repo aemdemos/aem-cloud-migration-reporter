@@ -248,11 +248,40 @@
 
 .graph-svg .data-bar {
     cursor: pointer;
-    transition: opacity 0.2s;
+    transition: all 0.3s ease;
+    animation: barGrow 0.6s ease-out;
+    transform-origin: bottom;
 }
 
 .graph-svg .data-bar:hover {
     opacity: 1 !important;
+    filter: brightness(1.15);
+}
+
+@keyframes barGrow {
+    from {
+        transform: scaleY(0);
+        opacity: 0;
+    }
+    to {
+        transform: scaleY(1);
+        opacity: 1;
+    }
+}
+
+/* Bar value labels */
+.graph-svg .bar-label {
+    font-size: 14px;
+    fill: #374151;
+    font-weight: 600;
+    pointer-events: none;
+}
+
+/* Grand total styling */
+.graph-svg .grand-total {
+    font-size: 18px;
+    fill: #1f2937;
+    font-weight: 700;
 }
 
 .no-data {
@@ -260,10 +289,6 @@
     color: #6b7280;
     padding: 40px 20px;
     font-size: 1rem;
-}
-
-.grand-total {
-    font-size: 20px;
 }
 
 /* ===============================

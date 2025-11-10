@@ -30,7 +30,7 @@ function createBarGraph(config) {
   container.className = 'graph-container';
 
   // Calculate data based on provided function
-  const { dataPoints, maxCount } = calculateData(migrations);
+  const { dataPoints, maxCount, totalUniqueCustomers } = calculateData(migrations);
 
   if (dataPoints.length === 0) {
     container.innerHTML = '<p class="no-data">No ingestion data available</p>';
@@ -73,6 +73,12 @@ function createBarGraph(config) {
   }
   svg.appendChild(gridGroup);
 
+  // Calculate grand total
+  // For customer graphs, use totalUniqueCustomers; for ingestions, sum the bars
+  const grandTotal = totalUniqueCustomers !== undefined
+    ? totalUniqueCustomers
+    : dataPoints.reduce((sum, dp) => sum + dp.count, 0);
+
   // Bars
   const dayRanges = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60'].slice().reverse();
   const reversedDataPoints = dataPoints.slice().reverse();
@@ -84,31 +90,43 @@ function createBarGraph(config) {
     const barHeight = ((point.count / maxCount) * graphHeight);
     const y = padding.top + graphHeight - barHeight;
 
+    // Calculate color intensity based on value (gradient effect)
+    const intensity = maxCount > 0 ? point.count / maxCount : 0;
+    let gradientColor;
+    if (barColor === '#3b82f6') {
+      // Blue gradient for customers graph
+      gradientColor = `rgba(59, 130, 246, ${0.4 + (intensity * 0.6)})`;
+    } else {
+      // Green gradient for ingestions graph
+      gradientColor = `rgba(16, 185, 129, ${0.4 + (intensity * 0.6)})`;
+    }
+
     // Bar rectangle
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     rect.setAttribute('x', String(x));
     rect.setAttribute('y', String(y));
     rect.setAttribute('width', String(barWidth));
     rect.setAttribute('height', String(barHeight));
-    rect.setAttribute('fill', barColor);
-    rect.setAttribute('opacity', '0.8');
+    rect.setAttribute('fill', gradientColor);
     rect.setAttribute('rx', '4');
     rect.setAttribute('class', 'data-bar');
     rect.innerHTML = `<title>${point.tooltip}</title>`;
     svg.appendChild(rect);
 
-    // Label above each bar
+    // Calculate percentage
+    const percentage = grandTotal > 0 ? ((point.count / grandTotal) * 100).toFixed(1) : 0;
+
+    // Label above each bar with count and percentage
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', String(x + barWidth / 2));
     label.setAttribute('y', String(y - 5));
     label.setAttribute('text-anchor', 'middle');
     label.setAttribute('class', 'bar-label');
-    label.textContent = point.count.toLocaleString();
+    label.textContent = `${point.count.toLocaleString()} (${percentage}%)`;
     svg.appendChild(label);
   });
 
-  // Grand total above graph
-  const grandTotal = dataPoints.reduce((sum, dp) => sum + dp.count, 0);
+  // Grand total text above graph
   const totalText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
   totalText.setAttribute('x', String(padding.left + graphWidth / 2));
   totalText.setAttribute('y', String(padding.top - 20));
@@ -134,9 +152,43 @@ function createBarGraph(config) {
   }
   svg.appendChild(yAxisGroup);
 
-  // X-axis labels
+  // X-axis labels with actual dates
   const xAxisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   xAxisGroup.setAttribute('class', 'x-axis');
+
+  // Helper function to format date range labels
+  const formatDateRange = (rangeStr) => {
+    const now = new Date();
+    const [start, end] = rangeStr.split('-').map(Number);
+
+    // Label "1-10" represents daysAgo 0-9 (positions 1-10 in sequence)
+    // So we need to subtract 1 to get actual daysAgo values
+    const oldestDaysAgo = end - 1; // e.g., "1-10" → 10-1 = 9 days ago
+    const newestDaysAgo = start - 1; // e.g., "1-10" → 1-1 = 0 (today)
+
+    // Calculate actual dates
+    const startDate = new Date(now.getTime() - (oldestDaysAgo * 24 * 60 * 60 * 1000));
+    const endDate = new Date(now.getTime() - (newestDaysAgo * 24 * 60 * 60 * 1000));
+
+    const formatDate = (date) => {
+      const month = date.toLocaleDateString('en-US', { month: 'short' });
+      const day = date.getDate();
+      return `${month} ${day}`;
+    };
+
+    const startFormatted = formatDate(startDate);
+    const endFormatted = formatDate(endDate);
+
+    // If same month, show "Nov 1-10", otherwise "Oct 31-Nov 5"
+    const startMonth = startDate.toLocaleDateString('en-US', { month: 'short' });
+    const endMonth = endDate.toLocaleDateString('en-US', { month: 'short' });
+
+    if (startMonth === endMonth) {
+      return `${startMonth} ${startDate.getDate()}-${endDate.getDate()}`;
+    }
+    return `${startFormatted}-${endFormatted}`;
+  };
+
   dayRanges.forEach((range, index) => {
     const rangeWidth = graphWidth / dayRanges.length;
     const x = padding.left + ((index * graphWidth) / dayRanges.length) + (rangeWidth / 2);
@@ -146,7 +198,7 @@ function createBarGraph(config) {
     text.setAttribute('y', String(height - padding.bottom + 20));
     text.setAttribute('text-anchor', 'middle');
     text.setAttribute('class', 'axis-label');
-    text.textContent = range;
+    text.textContent = formatDateRange(range);
     xAxisGroup.appendChild(text);
   });
   svg.appendChild(xAxisGroup);
@@ -185,7 +237,7 @@ export function createCustomersGraph(migrations) {
     migrations,
     title: 'Customers Running Ingestions - Last 60 Days',
     yAxisLabel: 'Number of Customers',
-    xAxisLabel: 'Days Ago',
+    xAxisLabel: 'Date Range',
     barColor: '#3b82f6',
     calculateData: (migs) => {
       const now = Date.now();
@@ -239,6 +291,13 @@ export function createCustomersGraph(migrations) {
 
       const maxCount = Math.max(...Object.values(rangeCounts));
 
+      // Calculate total unique customers across all ranges
+      const allUniqueCustomers = new Set();
+      Object.values(customersPerRange).forEach((customerSet) => {
+        customerSet.forEach((customer) => allUniqueCustomers.add(customer));
+      });
+      const totalUniqueCustomers = allUniqueCustomers.size;
+
       // Create distributed data
       const distributedData = dayRanges.map((range) => ({
         range,
@@ -246,7 +305,11 @@ export function createCustomersGraph(migrations) {
         tooltip: `${range} days ago: ${rangeCounts[range].toLocaleString()} unique customers`,
       }));
 
-      return { dataPoints: distributedData, maxCount: maxCount || 1 };
+      return {
+        dataPoints: distributedData,
+        maxCount: maxCount || 1,
+        totalUniqueCustomers,
+      };
     },
   });
 }
@@ -261,7 +324,7 @@ export function createIngestionsGraph(migrations) {
     migrations,
     title: 'Ingestion Activity - Last 60 Days',
     yAxisLabel: 'Number of Ingestions',
-    xAxisLabel: 'Days Ago',
+    xAxisLabel: 'Date Range',
     barColor: '#10b981',
     calculateData: (migs) => {
       const now = Date.now();
