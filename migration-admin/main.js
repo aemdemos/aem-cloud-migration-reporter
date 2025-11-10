@@ -44,9 +44,10 @@ class MigrationsApp {
       MigrationsApp.setupSidekickLogout();
 
       // Load graphs on page entry with LAST_2_MONTHS data
-      this.loadInitialGraphs().catch((error) => {
+      this. // Load graphs and table on page entry with LAST_2_MONTHS data
+      this.startMigrationSearchWithDefaultRange().catch((error) => {
         // eslint-disable-next-line no-console
-        console.error('Failed to load initial graphs:', error);
+        console.error('Failed to load initial data:', error);
       });
     } catch (error) {
       // Error already handled in setupUserProfile (alert shown, UI disabled)
@@ -54,6 +55,44 @@ class MigrationsApp {
       console.error('Initialization failed:', error.message);
     }
   }
+
+  async startMigrationSearchWithDefaultRange() {
+    const spinner = document.getElementById('loading-spinner');
+    try {
+      document.body.classList.add('loading');
+      if (spinner) spinner.classList.remove('hidden');
+
+      await this.ensureUserProfile();
+
+      // Fetch last 2 months data
+      const resp = await getCustomerMigrationInfo(DateRange.LAST_2_MONTHS.value);
+      this.migrations = await this.processApiResponse(resp);
+
+      // Sort alphabetically
+      this.migrations.sort((a, b) => a.customerName.localeCompare(b.customerName));
+
+      // Apply filter (empty = all)
+      this.filterMigrations('');
+
+      // Update table header
+      const totalIngestionsHeader = document.getElementById('total-ingestions-header');
+      if (totalIngestionsHeader) {
+        totalIngestionsHeader.textContent = `Total Ingestions (${DateRange.LAST_2_MONTHS.label})`;
+      }
+
+      // Update summary
+      const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
+      this.renderIngestionsCount(totalIngestions);
+
+      // Render graphs
+      this.renderGraph(this.migrations);
+
+    } finally {
+      document.body.classList.remove('loading');
+      if (spinner) spinner.classList.add('hidden');
+    }
+  }
+
 
   /**
    * Setup user profile for localhost development
