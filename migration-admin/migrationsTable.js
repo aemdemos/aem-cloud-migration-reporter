@@ -67,7 +67,7 @@ class MigrationsTable {
     this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
   }
 
-  addSortingToTable(table) {
+  addSortingToTable(table, migrations) {
     const headers = table.querySelectorAll('th[data-sort]');
     headers.forEach((header) => {
       header.addEventListener('click', () => {
@@ -75,8 +75,9 @@ class MigrationsTable {
 
         const columnKey = header.getAttribute('data-sort');
 
-        // Determine new direction relative to this header's current arrow class
-        const newDirection = header.classList.contains(CSS_CLASSES.TABLE.SORTED_ASC) ? 'desc' : 'asc';
+        // Determine new sort direction BEFORE removing classes
+        let newDirection = 'asc';
+        if (header.classList.contains(CSS_CLASSES.TABLE.SORTED_ASC)) newDirection = 'desc';
 
         // Remove sort classes from all headers
         headers.forEach((h) => h.classList.remove(
@@ -84,62 +85,63 @@ class MigrationsTable {
           CSS_CLASSES.TABLE.SORTED_DESC,
         ));
 
-        // Sort using the instance's current data
-        const sortedData = sortTable(this.currentMigrations, columnKey, newDirection);
+        // Sort data
+        const sortedData = sortTable(migrations, columnKey, newDirection);
 
-        // Replace the instance data with the newly-sorted array
-        this.currentMigrations = sortedData.slice();
-
-        // Add arrow class to clicked header
+        // Add arrow class
         header.classList.add(
           newDirection === 'asc'
             ? CSS_CLASSES.TABLE.SORTED_ASC
             : CSS_CLASSES.TABLE.SORTED_DESC,
         );
 
-        // Re-render with sorted data
         this.renderTable(sortedData);
         this.sortDirection = newDirection;
       });
     });
   }
 
-  addSortingToTable(table) {
-    const headers = table.querySelectorAll('th[data-sort]');
-    headers.forEach((header) => {
-      header.addEventListener('click', () => {
-        if (!this.isSortingEnabled) return;
+  initTable(migrations) {
+    this.migrationsContainer.innerHTML = '';
 
-        const columnKey = header.getAttribute('data-sort');
+    const summaryWrapper = document.createElement('div');
+    summaryWrapper.classList.add('table-summary-wrapper');
+    this.migrationsContainer.appendChild(summaryWrapper);
 
-        // Determine new direction relative to this header's current arrow class
-        const newDirection = header.classList.contains(CSS_CLASSES.TABLE.SORTED_ASC) ? 'desc' : 'asc';
+    const table = document.createElement('table');
+    table.classList.add(CSS_CLASSES.TABLE.STYLED_TABLE);
 
-        // Remove sort classes from all headers
-        headers.forEach((h) => h.classList.remove(
-          CSS_CLASSES.TABLE.SORTED_ASC,
-          CSS_CLASSES.TABLE.SORTED_DESC,
-        ));
+    table.innerHTML = `
+      <thead>
+        <tr>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.NAME}">Customer Name</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_BPA_UPLOAD}">Last BPA Upload</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_PROJECTS}">Total Projects</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.FIRST_INGESTION}">First Ingestion</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.LAST_INGESTION}">Latest Ingestion</th>
+          <th id="total-ingestions-header" data-sort="${TABLE_CONFIG.COLUMNS.TOTAL_INGESTIONS}">Total Ingestions</th>
+          <th data-sort="${TABLE_CONFIG.COLUMNS.FAILED_INGESTIONS}">Failed Ingestions</th>
+        </tr>
+      </thead>
+    `;
 
-        // Sort using the instance's current data
-        const sortedData = sortTable(this.currentMigrations, columnKey, newDirection);
+    const tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+    this.addSortingToTable(table, migrations);
+    this.migrationsContainer.appendChild(table);
 
-        // Replace the instance data with the newly-sorted array
-        this.currentMigrations = sortedData.slice();
+    // Initial sort
+    const sortedMigrations = sortTable(
+      migrations,
+      TABLE_CONFIG.DEFAULT_SORT_COLUMN,
+      this.sortDirection,
+    );
+    document.querySelector(`th[data-sort="${TABLE_CONFIG.DEFAULT_SORT_COLUMN}"]`)
+      .classList.add(CSS_CLASSES.TABLE.SORTED_ASC);
 
-        // Add arrow class to clicked header
-        header.classList.add(
-          newDirection === 'asc'
-            ? CSS_CLASSES.TABLE.SORTED_ASC
-            : CSS_CLASSES.TABLE.SORTED_DESC,
-        );
-
-        // Re-render with sorted data
-        this.renderTable(sortedData);
-        this.sortDirection = newDirection;
-      });
-    });
+    this.renderTable(sortedMigrations);
   }
+
   enableSorting() {
     this.isSortingEnabled = true;
   }
