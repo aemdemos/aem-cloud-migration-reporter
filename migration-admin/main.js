@@ -43,8 +43,7 @@ class MigrationsApp {
       this.setupEventListeners();
       MigrationsApp.setupSidekickLogout();
 
-      // Load graphs on page entry with LAST_2_MONTHS data
-      this. // Load graphs and table on page entry with LAST_2_MONTHS data
+      // Load graphs and table on page entry with LAST_2_MONTHS data
       this.startMigrationSearchWithDefaultRange().catch((error) => {
         // eslint-disable-next-line no-console
         console.error('Failed to load initial data:', error);
