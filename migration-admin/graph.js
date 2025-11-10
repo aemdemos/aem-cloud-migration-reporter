@@ -41,7 +41,7 @@ function createBarGraph(config) {
   const width = 800;
   const height = 300;
   const padding = {
-    top: 30, right: 30, bottom: 50, left: 60,
+    top: 50, right: 30, bottom: 50, left: 60,
   };
   const graphWidth = width - padding.left - padding.right;
   const graphHeight = height - padding.top - padding.bottom;
@@ -60,9 +60,7 @@ function createBarGraph(config) {
   const gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   gridGroup.setAttribute('class', 'grid-lines');
   const ySteps = 5;
-  // eslint-disable-next-line no-plusplus
   for (let i = 0; i <= ySteps; i++) {
-    // eslint-disable-next-line no-mixed-operators
     const y = padding.top + (graphHeight * i / ySteps);
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
     line.setAttribute('x1', String(padding.left));
@@ -75,18 +73,17 @@ function createBarGraph(config) {
   }
   svg.appendChild(gridGroup);
 
-  // Create bars - one for each day range
+  // Bars
   const dayRanges = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60'];
   const barWidth = (graphWidth / dayRanges.length) * 0.8;
   const barSpacing = (graphWidth / dayRanges.length) * 0.2;
 
   dataPoints.forEach((point, index) => {
-    // eslint-disable-next-line no-mixed-operators
     const x = padding.left + (index * graphWidth / dayRanges.length) + (barSpacing / 2);
-    // eslint-disable-next-line no-mixed-operators
     const barHeight = (point.count / maxCount * graphHeight);
     const y = padding.top + graphHeight - barHeight;
 
+    // Bar rectangle
     const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     rect.setAttribute('x', String(x));
     rect.setAttribute('y', String(y));
@@ -96,20 +93,34 @@ function createBarGraph(config) {
     rect.setAttribute('opacity', '0.8');
     rect.setAttribute('rx', '4');
     rect.setAttribute('class', 'data-bar');
-
     rect.innerHTML = `<title>${point.tooltip}</title>`;
-
     svg.appendChild(rect);
+
+    // Label above each bar
+    const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    label.setAttribute('x', String(x + barWidth / 2));
+    label.setAttribute('y', String(y - 5));
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('class', 'bar-label');
+    label.textContent = point.count.toLocaleString();
+    svg.appendChild(label);
   });
 
-  // Y-axis labels - counts
+  // Grand total above graph
+  const grandTotal = dataPoints.reduce((sum, dp) => sum + dp.count, 0);
+  const totalText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  totalText.setAttribute('x', String(padding.left + graphWidth / 2));
+  totalText.setAttribute('y', String(padding.top - 20));
+  totalText.setAttribute('text-anchor', 'middle');
+  totalText.setAttribute('class', 'grand-total');
+  totalText.textContent = `Total: ${grandTotal.toLocaleString()}`;
+  svg.appendChild(totalText);
+
+  // Y-axis labels
   const yAxisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   yAxisGroup.setAttribute('class', 'y-axis');
-  // eslint-disable-next-line no-plusplus
   for (let i = 0; i <= ySteps; i++) {
-    // eslint-disable-next-line no-mixed-operators
     const value = Math.round(maxCount - (maxCount * i / ySteps));
-    // eslint-disable-next-line no-mixed-operators
     const y = padding.top + (graphHeight * i / ySteps);
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -122,14 +133,11 @@ function createBarGraph(config) {
   }
   svg.appendChild(yAxisGroup);
 
-  // X-axis labels - day ranges
+  // X-axis labels
   const xAxisGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   xAxisGroup.setAttribute('class', 'x-axis');
-
   dayRanges.forEach((range, index) => {
-    // eslint-disable-next-line no-mixed-operators
-    const x = padding.left + (index * graphWidth / dayRanges.length)
-      + (graphWidth / dayRanges.length / 2);
+    const x = padding.left + (index * graphWidth / dayRanges.length) + (graphWidth / dayRanges.length / 2);
 
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', String(x));
@@ -139,7 +147,6 @@ function createBarGraph(config) {
     text.textContent = range;
     xAxisGroup.appendChild(text);
   });
-
   svg.appendChild(xAxisGroup);
 
   // Y-axis label
@@ -161,7 +168,6 @@ function createBarGraph(config) {
   xAxisLabelText.textContent = config.xAxisLabel;
   svg.appendChild(xAxisLabelText);
 
-  // Assemble container
   container.appendChild(titleElement);
   container.appendChild(svg);
   return container;
