@@ -360,7 +360,7 @@
 
 /* Bar value labels */
 .graph-svg .bar-label {
-    font-size: 14px;
+    font-size: 16px;
     fill: #374151;
     font-weight: 600;
     pointer-events: none;
