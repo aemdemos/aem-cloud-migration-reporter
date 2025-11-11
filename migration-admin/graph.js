@@ -119,16 +119,13 @@ function createBarGraph(config) {
     rect.innerHTML = `<title>${point.tooltip}</title>`;
     svg.appendChild(rect);
 
-    // Calculate percentage
-    const percentage = grandTotal > 0 ? ((point.count / grandTotal) * 100).toFixed(1) : 0;
-
     // Label above each bar with count and percentage
     const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     label.setAttribute('x', String(x + barWidth / 2));
     label.setAttribute('y', String(y - 5));
     label.setAttribute('text-anchor', 'middle');
     label.setAttribute('class', 'bar-label');
-    label.textContent = `${point.count.toLocaleString()} (${percentage}%)`;
+    label.textContent = `${point.count.toLocaleString()}`;
     svg.appendChild(label);
   });
 
