@@ -1,13 +1,63 @@
-import sortTable from './utils.js';
+/**
+ * Migrations table component - handles rendering and sorting of migration data
+ * @module migrationsTable
+ */
+
 import { TABLE_CONFIG, CSS_CLASSES, ELEMENT_IDS } from './constants.js';
 
+/**
+ * Sorts table data by specified column and direction
+ * @param {Array<Object>} data - Array of migration objects to sort
+ * @param {string} columnKey - The key/property to sort by
+ * @param {string} direction - Sort direction ('asc' or 'desc')
+ * @returns {Array<Object>} Sorted array of migrations
+ */
+function sortTable(data, columnKey, direction) {
+  return [...data].sort((a, b) => {
+    let aVal = a[columnKey];
+    let bVal = b[columnKey];
+
+    // Handle null/undefined values
+    if (aVal == null) aVal = '';
+    if (bVal == null) bVal = '';
+
+    // Compare based on type
+    if (typeof aVal === 'string' && typeof bVal === 'string') {
+      return direction === 'asc'
+        ? aVal.localeCompare(bVal)
+        : bVal.localeCompare(aVal);
+    }
+
+    // Numeric comparison
+    return direction === 'asc' ? aVal - bVal : bVal - aVal;
+  });
+}
+
+/**
+ * MigrationsTable class - manages the display and interaction of migration data in a table
+ * @class
+ */
 class MigrationsTable {
+  /**
+   * Creates a new MigrationsTable instance
+   * @constructor
+   */
   constructor() {
+    /** @type {string} Current sort direction */
     this.sortDirection = TABLE_CONFIG.DEFAULT_SORT_DIRECTION;
+    /** @type {boolean} Whether sorting is currently enabled */
     this.isSortingEnabled = false;
+    /** @type {HTMLElement|null} Container element for the migrations table */
     this.migrationsContainer = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
   }
 
+  /**
+   * Creates a table cell element with optional class name
+   * @static
+   * @param {string|number} content - Cell content to display
+   * @param {string} [className=''] - Optional CSS class name
+   * @returns {HTMLTableCellElement} The created table cell
+   */
   static createCell(content, className = '') {
     const td = document.createElement('td');
     if (className) td.className = className;
@@ -15,10 +65,20 @@ class MigrationsTable {
     return td;
   }
 
+  /**
+   * Renders the table with migration data
+   * @param {Array<Object>} migrations - Array of migration objects to display
+   */
   renderTable(migrations) {
     const tbody = this.migrationsContainer.querySelector('tbody');
     tbody.innerHTML = '';
 
+    /**
+     * Formats a timestamp for display in the table
+     * @param {number} timestamp - Unix timestamp in milliseconds
+     * @param {boolean} [includeTime=false] - Whether to include time in formatted output
+     * @returns {string} Formatted date string or '-' if no timestamp
+     */
     const formatDate = (timestamp, includeTime = false) => {
       if (!timestamp) return '-';
       const date = new Date(timestamp);
@@ -58,11 +118,24 @@ class MigrationsTable {
       const totalCell = MigrationsTable.createCell(migration.totalIngestions ?? '-', 'numeric');
       const failedCell = MigrationsTable.createCell(migration.failedIngestions ?? '-', 'numeric');
 
-      tr.append(customerNameCell, lastBpaCell, totalProjectsCell, firstCell, lastCell, totalCell, failedCell);
+      tr.append(
+        customerNameCell,
+        lastBpaCell,
+        totalProjectsCell,
+        firstCell,
+        lastCell,
+        totalCell,
+        failedCell,
+      );
       tbody.appendChild(tr);
     });
   }
 
+  /**
+   * Adds sorting functionality to table headers
+   * @param {HTMLTableElement} table - The table element
+   * @param {Array<Object>} migrations - Array of migration data
+   */
   addSortingToTable(table, migrations) {
     const headers = table.querySelectorAll('th[data-sort]');
     headers.forEach((header) => {
@@ -97,6 +170,10 @@ class MigrationsTable {
     });
   }
 
+  /**
+   * Initializes the table with migration data and default sorting
+   * @param {Array<Object>} migrations - Array of migration objects
+   */
   initTable(migrations) {
     this.migrationsContainer.innerHTML = '';
 
@@ -138,6 +215,9 @@ class MigrationsTable {
     this.renderTable(sortedMigrations);
   }
 
+  /**
+   * Enables sorting functionality for the table
+   */
   enableSorting() {
     this.isSortingEnabled = true;
   }

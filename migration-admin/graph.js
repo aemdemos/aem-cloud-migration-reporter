@@ -11,6 +11,12 @@
  */
 
 /**
+ * Graph rendering module for migration analytics
+ * Provides SVG-based bar graphs for visualizing customer and ingestion activity
+ * @module graph
+ */
+
+/**
  * Generic function to create a bar graph with day ranges on X-axis
  * @param {Object} config - Configuration object
  * @param {Array} config.migrations - Array of migration data
@@ -228,7 +234,15 @@ function createBarGraph(config) {
 }
 
 /**
- * Creates a bar graph showing customers running migrations.
+ * Creates a bar graph showing unique customers running ingestions by day ranges
+ * Groups customers by 10-day periods (1-10, 11-20, etc.) over the last 60 days
+ * @param {Array<Object>} migrations - Array of migration objects with ingestionStartDates
+ * @param {string} migrations[].customerName - Customer name
+ * @param {number[]} migrations[].ingestionStartDates - Array of ingestion start timestamps
+ * @returns {HTMLElement} Graph container element
+ * @example
+ * const graph = createCustomersGraph(migrations);
+ * document.body.appendChild(graph);
  */
 export function createCustomersGraph(migrations) {
   const dayRanges = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60'];
@@ -315,7 +329,14 @@ export function createCustomersGraph(migrations) {
 }
 
 /**
- * Creates a bar graph showing number of ingestions.
+ * Creates a bar graph showing total number of ingestions by day ranges
+ * Counts all ingestions grouped by 10-day periods (1-10, 11-20, etc.) over the last 60 days
+ * @param {Array<Object>} migrations - Array of migration objects with ingestionStartDates
+ * @param {number[]} migrations[].ingestionStartDates - Array of ingestion start timestamps
+ * @returns {HTMLElement} Graph container element
+ * @example
+ * const graph = createIngestionsGraph(migrations);
+ * document.body.appendChild(graph);
  */
 export function createIngestionsGraph(migrations) {
   const dayRanges = ['1-10', '11-20', '21-30', '31-40', '41-50', '51-60'];

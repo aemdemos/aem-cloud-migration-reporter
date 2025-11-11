@@ -10,9 +10,7 @@
  * governing permissions and limitations under the License.
  */
 
-import {
-  getCustomerMigrationInfo,
-} from './api.js';
+import { getCustomerMigrationInfo } from './api.js';
 import MigrationsTable from './migrationsTable.js';
 import { ELEMENT_IDS } from './constants.js';
 import { DateRange } from './DateRange.js';
@@ -117,23 +115,10 @@ class MigrationsApp {
   }
 
   /**
-   * Disable the UI when validation fails
+   * Hide UI elements (filters and graphs)
    */
   // eslint-disable-next-line class-methods-use-this
-  disableUI() {
-    // Disable search input
-    const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
-    if (customerSearch) {
-      customerSearch.disabled = true;
-    }
-
-    // Disable search button
-    const searchButton = document.getElementById('search-button');
-    if (searchButton) {
-      searchButton.disabled = true;
-    }
-
-    // Hide filters and graphs
+  hideUI() {
     const filtersForm = document.querySelector('.filters-form');
     if (filtersForm) {
       filtersForm.style.display = 'none';
@@ -143,8 +128,25 @@ class MigrationsApp {
     if (graphWrapper) {
       graphWrapper.style.display = 'none';
     }
+  }
 
-    // Show error message in the container
+  /**
+   * Disable the UI when validation fails
+   */
+  // eslint-disable-next-line class-methods-use-this
+  disableUI() {
+    const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
+    if (customerSearch) {
+      customerSearch.disabled = true;
+    }
+
+    const searchButton = document.getElementById('search-button');
+    if (searchButton) {
+      searchButton.disabled = true;
+    }
+
+    this.hideUI();
+
     const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
     if (container) {
       container.innerHTML = '<p class="error">Access denied. Please add email and name parameters to the URL.</p>';
@@ -175,17 +177,7 @@ class MigrationsApp {
       try {
         this.userProfile = await getUserProfile();
       } catch (error) {
-        // Hide filters and graphs
-        const filtersForm = document.querySelector('.filters-form');
-        if (filtersForm) {
-          filtersForm.style.display = 'none';
-        }
-
-        const graphWrapper = document.getElementById('graph-wrapper');
-        if (graphWrapper) {
-          graphWrapper.style.display = 'none';
-        }
-
+        this.hideUI();
         const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
         if (container) {
           container.innerHTML = '<p class="error">You are not logged in. Please log in to view migration data.</p>';
@@ -196,19 +188,8 @@ class MigrationsApp {
       }
     }
 
-    // Check if user profile is still null after attempting to get it
     if (!this.userProfile) {
-      // Hide filters and graphs
-      const filtersForm = document.querySelector('.filters-form');
-      if (filtersForm) {
-        filtersForm.style.display = 'none';
-      }
-
-      const graphWrapper = document.getElementById('graph-wrapper');
-      if (graphWrapper) {
-        graphWrapper.style.display = 'none';
-      }
-
+      this.hideUI();
       const container = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
       if (container) {
         container.innerHTML = this.isLocalhost
@@ -305,22 +286,14 @@ class MigrationsApp {
    */
   handleCustomerSearchFilter() {
     const customerSearch = document.getElementById(ELEMENT_IDS.CUSTOMER_SEARCH);
-
     if (!customerSearch) return;
 
-    // Show spinner and set loading state
+    const searchTerm = customerSearch.value;
+    this.filterMigrations(searchTerm);
 
-    // Use requestAnimationFrame to ensure DOM updates are applied before filtering
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        const searchTerm = customerSearch.value;
-        this.filterMigrations(searchTerm);
-
-        // Update summary stats based on filtered results
-        const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
-        this.renderIngestionsCount(totalIngestions);
-      });
-    });
+    // Update summary stats based on filtered results
+    const totalIngestions = this.computeIngestionStats(this.filteredMigrations);
+    this.renderIngestionsCount(totalIngestions);
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -387,17 +360,7 @@ class MigrationsApp {
     } catch (error) {
       if (error.message === 'User not logged in') return;
 
-      // Hide filters and graphs on error
-      const filtersForm = document.querySelector('.filters-form');
-      if (filtersForm) {
-        filtersForm.style.display = 'none';
-      }
-
-      const graphWrapper = document.getElementById('graph-wrapper');
-      if (graphWrapper) {
-        graphWrapper.style.display = 'none';
-      }
-
+      this.hideUI();
       const errorContainer = document.getElementById(ELEMENT_IDS.MIGRATIONS_CONTAINER);
       if (errorContainer) {
         errorContainer.innerHTML = '<p class="error">Failed to load migration data.</p>';

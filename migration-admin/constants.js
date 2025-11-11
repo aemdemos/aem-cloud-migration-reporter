@@ -33,15 +33,24 @@ export const CSS_CLASSES = {
     SORTED_DESC: 'sorted-desc',
     MIGRATION_ROW: 'migration-row',
   },
-
+  GRAPH: {
+    CONTAINER: 'graph-container',
+    SVG: 'graph-svg',
+    TITLE: 'graph-title',
+    DATA_BAR: 'data-bar',
+    BAR_LABEL: 'bar-label',
+    GRAND_TOTAL: 'grand-total',
+    AXIS_LABEL: 'axis-label',
+    AXIS_TITLE: 'axis-title',
+  },
 };
 
 // DOM Element IDs
 export const ELEMENT_IDS = {
   MIGRATIONS_CONTAINER: 'migrations-container',
   CUSTOMER_SEARCH: 'customer-search',
-  NAME: 'customerName',
-  MIGRATION: 'migration',
-  MIGRATION_CREATED: 'migration-created',
-  BPA_REPORTS_UPLOADED: 'bpa-reports-uploaded',
+  SEARCH_BUTTON: 'search-button',
+  DATE_RANGE_SELECT: 'date-range-select',
+  GRAPH_WRAPPER: 'graph-wrapper',
+  LOADING_SPINNER: 'loading-spinner',
 };
