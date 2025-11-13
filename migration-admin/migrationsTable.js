@@ -110,7 +110,21 @@ class MigrationsTable {
       tr.setAttribute('data-migration-id', migration.id || '');
       tr.setAttribute('data-ims-org-id', migration.imsOrgId || '');
 
-      const customerNameCell = MigrationsTable.createCell(migration.customerName ?? '-', 'string');
+      const customerNameCell = document.createElement('td');
+      customerNameCell.className = 'string';
+
+      if (migration.imsOrgId && migration.customerName) {
+        const link = document.createElement('a');
+        link.href = `https://aemcs-workspace.adobe.com/customer/tenant/${migration.imsOrgId}`;
+        link.textContent = migration.customerName;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        customerNameCell.appendChild(link);
+      } else {
+        customerNameCell.textContent = migration.customerName ?? '-';
+      }
+
+
       const lastBpaCell = MigrationsTable.createCell(formatDate(migration.bpaReportUploaded), 'date');
       const totalProjectsCell = MigrationsTable.createCell(migration.totalProjects ?? '-', 'numeric');
       const firstCell = MigrationsTable.createCell(formatDate(migration.firstIngestion), 'date');
