@@ -124,7 +124,6 @@ class MigrationsTable {
         customerNameCell.textContent = migration.customerName ?? '-';
       }
 
-
       const lastBpaCell = MigrationsTable.createCell(formatDate(migration.bpaReportUploaded), 'date');
       const totalProjectsCell = MigrationsTable.createCell(migration.totalProjects ?? '-', 'numeric');
       const firstCell = MigrationsTable.createCell(formatDate(migration.firstIngestion), 'date');

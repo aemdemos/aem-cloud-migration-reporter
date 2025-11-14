@@ -61,8 +61,10 @@ class MigrationsApp {
 
       await this.ensureUserProfile();
 
+      const searchBy = this.userProfile.name || this.userProfile.email;
+
       // Fetch last 2 months data
-      const resp = await getCustomerMigrationInfo(DateRange.LAST_2_MONTHS.value);
+      const resp = await getCustomerMigrationInfo(searchBy, DateRange.LAST_2_MONTHS.value);
       this.migrations = await this.processApiResponse(resp);
 
       // Sort alphabetically
@@ -326,6 +328,8 @@ class MigrationsApp {
       // Ensure user profile is available
       await this.ensureUserProfile();
 
+      const searchBy = this.userProfile.name || this.userProfile.email;
+
       // Show spinner and set loading state
       document.body.classList.add('loading');
       if (spinner) spinner.classList.remove('hidden');
@@ -338,7 +342,7 @@ class MigrationsApp {
       const dateRangeSelect = document.getElementById('date-range-select');
       const selectedRange = dateRangeSelect ? dateRangeSelect.value : 'LAST_1_MONTH';
 
-      const resp = await getCustomerMigrationInfo(selectedRange);
+      const resp = await getCustomerMigrationInfo(searchBy, selectedRange);
       this.migrations = await this.processApiResponse(resp);
 
       // Sort customer Names alphabetically for predictable loading

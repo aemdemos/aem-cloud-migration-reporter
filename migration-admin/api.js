@@ -13,10 +13,14 @@
 import API_ENDPOINT from './config.js';
 import { DateRange } from './DateRange.js';
 
-export const getCustomerMigrationInfo = async (dateRange = DateRange.LAST_1_MONTH.value) => {
+export const getCustomerMigrationInfo = async (searchBy, dateRange = DateRange.LAST_1_MONTH.value) => {
   try {
     const url = new URL(`${API_ENDPOINT}/customerMigrationInfo`);
     url.searchParams.set('dateRange', dateRange);
+
+    if (searchBy) {
+      url.searchParams.set('searchBy', searchBy);
+    }
 
     const response = await fetch(url);
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
